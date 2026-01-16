@@ -144,7 +144,7 @@ export async function registerRoutes(
       try {
         const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
         await client.messages.create({
-          body: `Hi ${entry.name}, your table is ready at Cafe 2020! Please accept here: ${process.env.FRONTEND_URL || 'http://localhost:5000'}/queue/${entry.id}/accept`,
+          body: `Hi ${entry.name}, your table is ready at Cafe 2020! Please accept here: ${process.env.PUBLIC_URL || 'https://' + process.env.REPL_SLUG + '.' + process.env.REPL_OWNER + '.repl.co'}/queue/${entry.id}/accept`,
           from: process.env.TWILIO_PHONE_NUMBER,
           to: entry.phoneNumber
         });

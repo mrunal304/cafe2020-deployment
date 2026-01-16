@@ -88,6 +88,12 @@ export default function Home() {
               placeholder="e.g. 9876543210"
               className="bg-stone-50 border-stone-200 focus:ring-orange-500 focus:border-orange-500 h-12 text-lg rounded-xl tracking-wider"
               maxLength={10}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9]/g, "");
+                if (val.length <= 10) {
+                  form.setValue("phoneNumber", val);
+                }
+              }}
             />
             {form.formState.errors.phoneNumber && (
               <p className="text-red-500 text-xs font-medium">{form.formState.errors.phoneNumber.message}</p>
@@ -143,7 +149,7 @@ export default function Home() {
             <Loader2 className="w-6 h-6 animate-spin" />
           ) : (
             <>
-              Get in Queue
+              Proceed
               <ArrowRight className="w-5 h-5 ml-2" />
             </>
           )}

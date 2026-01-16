@@ -52,53 +52,74 @@ export default function QueueStatus() {
   return (
     <CustomerLayout>
       <div className="text-center space-y-6">
+        <div className="flex justify-center mb-4">
+          <div className="bg-yellow-400 p-4 border-2 border-stone-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="border-2 border-stone-800 p-2 text-stone-800 font-black flex flex-col items-center">
+              <span className="text-xl tracking-tighter">Prithvi</span>
+              <div className="w-12 h-12 border-2 border-stone-800 rounded-full flex items-center justify-center my-1">
+                 <div className="w-8 h-8 border-t-4 border-stone-800 rounded-full rotate-45" />
+              </div>
+              <span className="text-xl tracking-tighter">CAFÉ</span>
+            </div>
+          </div>
+        </div>
+        
+        <p className="font-bold text-stone-800 text-sm">Prithvi Cafe - Juhu</p>
+
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, type: "spring" }}
-          className="bg-green-100 text-green-700 px-6 py-3 rounded-full inline-flex items-center gap-2 text-sm font-bold shadow-sm"
+          className="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto shadow-sm"
         >
-          <CheckCircle2 className="w-5 h-5" />
-          You're in the queue!
+          <CheckCircle2 className="w-10 h-10" />
         </motion.div>
 
-        <div className="py-6">
-          <span className="text-stone-400 font-medium uppercase tracking-widest text-xs block mb-2">Your Ticket Number</span>
-          <h1 className="text-8xl font-black font-display text-stone-800 tracking-tighter">
-            #{queue.queueNumber}
+        <h2 className="text-3xl font-black text-stone-800">Queued!</h2>
+        
+        <p className="text-stone-800 text-[10px] font-medium opacity-80">
+          Restaurant Timings: 10:30 am to 10:30 pm (Monday to Sunday)
+        </p>
+
+        <div className="py-2">
+          <span className="text-stone-800 font-bold text-sm block mb-1">Your queue number is</span>
+          <h1 className="text-6xl font-black text-stone-800">
+            # {queue.queueNumber}
           </h1>
         </div>
 
-        <div className="bg-stone-50 rounded-2xl p-4 border border-stone-100 space-y-4 shadow-inner">
-          <div className="flex items-center justify-between text-stone-600 border-b border-stone-200 pb-3 last:border-0 last:pb-0">
-            <div className="flex items-center gap-3">
-              <Users className="w-5 h-5 text-orange-400" />
-              <span className="font-medium">Party Size</span>
-            </div>
-            <span className="font-bold text-lg">{queue.numberOfPeople} People</span>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[120px]">
+            <span className="text-stone-800 font-bold text-sm mb-2">Booking for</span>
+            <span className="text-orange-500 text-3xl font-black">{queue.numberOfPeople}</span>
           </div>
 
-          <div className="flex items-center justify-between text-stone-600 border-b border-stone-200 pb-3 last:border-0 last:pb-0">
-            <div className="flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-orange-400" />
-              <span className="font-medium">Date</span>
-            </div>
-            <span className="font-bold">{format(new Date(queue.createdAt!), 'MMM d, yyyy')}</span>
-          </div>
-
-          <div className="flex items-center justify-between text-stone-600">
-             <div className="flex items-center gap-3">
-              <Clock className="w-5 h-5 text-orange-400" />
-              <span className="font-medium">Joined At</span>
-            </div>
-            <span className="font-bold">{format(new Date(queue.createdAt!), 'h:mm a')}</span>
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[120px]">
+            <span className="text-stone-800 font-bold text-sm mb-2">Date & Time</span>
+            <span className="text-orange-500 text-lg font-black leading-tight">
+              {format(new Date(queue.createdAt!), 'dd MMM, hh:mm a')}
+            </span>
           </div>
         </div>
 
-        <div className="bg-blue-50 text-blue-700 p-4 rounded-xl text-sm leading-relaxed border border-blue-100">
-          <p>
-            <strong>Keep this page open!</strong> The status will update automatically when we're ready for you. We'll also send an SMS to {queue.phoneNumber}.
-          </p>
+        <div className="pt-2 pb-4">
+          <p className="text-stone-400 font-bold text-sm mb-4">Name: {queue.name}</p>
+          <Button 
+            variant="outline" 
+            className="bg-white text-stone-800 border-stone-200 font-bold px-8 h-12 rounded-xl shadow-sm hover:bg-stone-50"
+            onClick={() => {/* Add leave queue logic if needed */}}
+          >
+            Leave Queue
+          </Button>
+        </div>
+
+        <div className="fixed bottom-0 left-0 right-0 flex border-t border-stone-200 bg-white">
+          <button className="flex-1 h-16 flex items-center justify-center gap-2 font-bold text-stone-800 border-r border-stone-200 hover:bg-stone-50 transition-colors">
+            <span className="text-xl">Share with Friends</span>
+          </button>
+          <button className="flex-1 h-16 flex items-center justify-center gap-2 font-bold text-white bg-[#FF9933] hover:bg-[#e68a2e] transition-colors">
+            <span className="text-xl">Get Direction</span>
+          </button>
         </div>
       </div>
     </CustomerLayout>
