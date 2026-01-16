@@ -5,12 +5,30 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 
+// Import Pages
+import Home from "@/pages/Home";
+import QueueStatus from "@/pages/QueueStatus";
+import Accept from "@/pages/Accept";
+import Confirmed from "@/pages/Confirmed";
+import Expired from "@/pages/Expired";
+import AdminLogin from "@/pages/admin/Login";
+import AdminDashboard from "@/pages/admin/Dashboard";
+
 function Router() {
   return (
     <Switch>
-      {/* Add pages below */}
-      {/* <Route path="/" component={Home}/> */}
-      {/* Fallback to 404 */}
+      {/* Customer Routes */}
+      <Route path="/" component={Home} />
+      <Route path="/queue/:id" component={QueueStatus} />
+      <Route path="/queue/:id/accept" component={Accept} />
+      <Route path="/queue/:id/confirmed" component={Confirmed} />
+      <Route path="/queue/:id/expired" component={Expired} />
+
+      {/* Admin Routes */}
+      <Route path="/admin" component={AdminLogin} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
+
+      {/* Fallback */}
       <Route component={NotFound} />
     </Switch>
   );
