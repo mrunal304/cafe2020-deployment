@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Coffee } from "lucide-react";
+import logoUrl from "@assets/image_1768618545322.png";
 
 export function CustomerLayout({ children }: { children: ReactNode }) {
   return (
@@ -10,11 +10,12 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
       <div className="w-full max-w-md z-10 h-full flex flex-col py-8 overflow-hidden">
         {/* Logo Header */}
         <div className="flex flex-col items-center mb-6 flex-shrink-0">
-          <div className="bg-[#FFCC00] p-4 rounded-xl shadow-lg border-4 border-white mb-4 rotate-3 transform hover:rotate-0 transition-transform duration-300">
-            <h1 className="text-2xl font-black text-black tracking-tight font-display uppercase flex items-center gap-2">
-              <Coffee className="w-6 h-6" />
-              Cafe 2020
-            </h1>
+          <div className="mb-4 transition-transform duration-300">
+            <img 
+              src={logoUrl} 
+              alt="Cafe 2020 Logo" 
+              className="h-24 w-auto object-contain"
+            />
           </div>
           <p className="text-stone-600 font-bold tracking-widest text-xs uppercase opacity-80">Queue Management</p>
         </div>
