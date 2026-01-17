@@ -77,13 +77,13 @@ export default function QueueStatus() {
         </div>
 
         {/* Side-by-Side Cards */}
-        <div className="grid grid-cols-2 gap-3 w-full mb-4">
-          <div className="bg-white rounded-2xl p-3 md:p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[80px] md:min-h-[100px]">
+        <div className="grid grid-cols-2 gap-3 w-full mb-6">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center min-h-[100px]">
             <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Booking for</span>
             <span className="text-[#F39C12] text-3xl font-black leading-none">{queue.numberOfPeople}</span>
           </div>
 
-          <div className="bg-white rounded-2xl p-3 md:p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center min-h-[80px] md:min-h-[100px]">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-stone-100 flex flex-col items-center justify-center text-center min-h-[100px]">
             <span className="text-stone-500 font-bold text-[11px] uppercase mb-1">Date & Time</span>
             <span className="text-[#F39C12] text-sm font-black leading-tight">
               {format(new Date(queue.createdAt!), 'dd MMM, hh:mm a')}
@@ -92,18 +92,18 @@ export default function QueueStatus() {
         </div>
 
         {/* Name & Leave Queue */}
-        <div className="flex flex-col items-center pb-1">
-          <p className="text-stone-500 font-bold text-xs mb-2 uppercase">Name: {queue.name}</p>
+        <div className="flex flex-col items-center pb-2">
+          <p className="text-stone-500 font-bold text-xs mb-3 uppercase">Name: {queue.name}</p>
           <Button 
             variant="outline" 
-            className="bg-white text-stone-900 border-stone-200 font-black px-8 h-9 rounded-xl shadow-sm hover:bg-stone-50 uppercase tracking-wide text-xs"
+            className="bg-white text-stone-900 border-stone-200 font-black px-8 h-10 rounded-xl shadow-sm hover:bg-stone-50 uppercase tracking-wide text-xs"
           >
             Leave Queue
           </Button>
         </div>
 
         {/* Action Buttons - Placed directly below within the flow for smaller screens, but styled for prominence */}
-        <div className="w-full flex mt-4 md:mt-6 bg-white shadow-lg rounded-xl overflow-hidden border border-stone-100">
+        <div className="w-full flex mt-8 bg-white shadow-lg rounded-xl overflow-hidden border border-stone-100">
           <button className="flex-1 flex items-center justify-center gap-2 py-4 font-black text-stone-800 border-r border-stone-100 hover:bg-stone-50 transition-colors uppercase tracking-tight text-sm">
             <Share2 className="w-4 h-4" />
             Share
