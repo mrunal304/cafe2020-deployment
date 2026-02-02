@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   MongoUser,
   MongoQueueEntry,
@@ -111,7 +112,9 @@ export class MongoStorage implements IStorage {
   }
 
   async getQueueEntry(id: string): Promise<QueueEntry | undefined> {
-    const entry = await MongoQueueEntry.findById(id);
+    const entry = mongoose.Types.ObjectId.isValid(id) 
+      ? await MongoQueueEntry.findById(id)
+      : await MongoQueueEntry.findOne({ queueNumber: parseInt(id) || 0 });
     return entry ? this.mapQueueEntry(entry) : undefined;
   }
 

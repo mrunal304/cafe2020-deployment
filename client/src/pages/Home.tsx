@@ -39,7 +39,7 @@ export default function Home() {
           title: "Welcome to the queue!",
           description: `You are #${entry.queueNumber} in line.`,
         });
-        setLocation(`/queue/${entry.id}`);
+        setLocation(`/queue/${entry.queueNumber}`);
       },
       onError: (err) => {
         toast({

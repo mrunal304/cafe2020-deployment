@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api, buildUrl, type CreateQueueRequest, type UpdateQueueStatusRequest } from "@shared/routes";
+import { type QueueEntry } from "@shared/schema";
 
 // Customer: Create a queue entry
 export function useCreateQueueEntry() {
@@ -21,8 +22,8 @@ export function useCreateQueueEntry() {
 }
 
 // Customer: Get status of specific entry (Public, Polling)
-export function useQueueStatus(id: number) {
-  return useQuery({
+export function useQueueStatus(id: string) {
+  return useQuery<QueueEntry>({
     queryKey: [api.queue.status.path, id],
     queryFn: async () => {
       const url = buildUrl(api.queue.status.path, { id });
@@ -38,13 +39,13 @@ export function useQueueStatus(id: number) {
       }
       return 5000; // Poll every 5s
     },
-    enabled: !isNaN(id),
+    enabled: id !== "0",
   });
 }
 
 // Admin: List all queue entries
 export function useQueueList() {
-  return useQuery({
+  return useQuery<QueueEntry[]>({
     queryKey: [api.queue.list.path],
     queryFn: async () => {
       const res = await fetch(api.queue.list.path, { credentials: "include" });
@@ -59,7 +60,7 @@ export function useQueueList() {
 export function useUpdateQueueStatus() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: number } & UpdateQueueStatusRequest) => {
+    mutationFn: async ({ id, status }: { id: string } & UpdateQueueStatusRequest) => {
       const url = buildUrl(api.queue.updateStatus.path, { id });
       const res = await fetch(url, {
         method: api.queue.updateStatus.method,
@@ -80,7 +81,7 @@ export function useUpdateQueueStatus() {
 export function useCallCustomer() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       const url = buildUrl(api.queue.call.path, { id });
       const res = await fetch(url, { 
         method: api.queue.call.method,
@@ -99,7 +100,7 @@ export function useCallCustomer() {
 export function useAcceptTable() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       const url = buildUrl(api.queue.accept.path, { id });
       const res = await fetch(url, { 
         method: api.queue.accept.method 
@@ -117,7 +118,7 @@ export function useAcceptTable() {
 export function useCancelBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       const url = buildUrl(api.queue.cancel.path, { id });
       const res = await fetch(url, { 
         method: api.queue.cancel.method 

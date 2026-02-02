@@ -10,20 +10,20 @@ import { format } from "date-fns";
 export default function QueueStatus() {
   const [, params] = useRoute("/queue/:id");
   const [, setLocation] = useLocation();
-  const id = parseInt(params?.id || "0");
+  const id = params?.id || "0";
   
   const { data: queue, isLoading, error } = useQueueStatus(id);
 
   useEffect(() => {
     if (!queue) return;
     if (queue.status === "called") {
-      setLocation(`/queue/${id}/accept`);
+      setLocation(`/queue/${queue.id}/accept`);
     } else if (queue.status === "completed") {
-      setLocation(`/queue/${id}/confirmed`);
+      setLocation(`/queue/${queue.id}/confirmed`);
     } else if (queue.status === "expired" || queue.status === "cancelled") {
-      setLocation(`/queue/${id}/expired`);
+      setLocation(`/queue/${queue.id}/expired`);
     }
-  }, [queue, id, setLocation]);
+  }, [queue, setLocation]);
 
   if (isLoading) {
     return (
@@ -41,7 +41,7 @@ export default function QueueStatus() {
       <CustomerLayout>
         <div className="text-center py-8">
           <h2 className="text-xl font-bold text-red-500 mb-2">Booking Not Found</h2>
-          <p className="text-stone-500">Could not find queue entry #{id}.</p>
+          <p className="text-stone-500">Could not find queue entry.</p>
           <a href="/" className="inline-block mt-4 text-orange-500 font-medium hover:underline">Return Home</a>
         </div>
       </CustomerLayout>

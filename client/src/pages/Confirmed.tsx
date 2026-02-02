@@ -5,7 +5,7 @@ import { useQueueStatus } from "@/hooks/use-queue";
 
 export default function Confirmed() {
   const [, params] = useRoute("/queue/:id/confirmed");
-  const id = parseInt(params?.id || "0");
+  const id = params?.id || "0";
   const { data: queue } = useQueueStatus(id);
 
   return (

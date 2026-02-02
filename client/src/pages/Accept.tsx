@@ -10,7 +10,7 @@ import { differenceInSeconds } from "date-fns";
 export default function Accept() {
   const [, params] = useRoute("/queue/:id/accept");
   const [, setLocation] = useLocation();
-  const id = parseInt(params?.id || "0");
+  const id = params?.id || "0";
   
   const { data: queue, isLoading } = useQueueStatus(id);
   const { mutate: accept, isPending: isAccepting } = useAcceptTable();
@@ -43,17 +43,17 @@ export default function Accept() {
   // Handle redirects
   useEffect(() => {
     if (!queue) return;
-    if (queue.status === 'confirmed') setLocation(`/queue/${id}/confirmed`);
-    if (queue.status === 'expired' || queue.status === 'cancelled') setLocation(`/queue/${id}/expired`);
+    if (queue.status === 'confirmed') setLocation(`/queue/${queue.id}/confirmed`);
+    if (queue.status === 'expired' || queue.status === 'cancelled') setLocation(`/queue/${queue.id}/expired`);
   }, [queue, id, setLocation]);
 
   const handleAccept = () => {
-    accept(id);
+    accept(queue!.id);
   };
 
   const handleCancel = () => {
     if (confirm("Are you sure you want to give up your spot?")) {
-      cancel(id);
+      cancel(queue!.id);
     }
   };
 
