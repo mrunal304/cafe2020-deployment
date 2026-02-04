@@ -207,25 +207,25 @@ export async function registerRoutes(
     res.json(entry);
   });
 
-  // CUSTOMER CANCEL
-  app.post(api.queue.cancel.path, async (req, res) => {
+  // UPDATE STATUS
+  app.patch("/api/queue/:id/status", async (req, res) => {
     const id = req.params.id;
+    const { status } = req.body;
     let entry = await storage.getQueueEntry(id);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
+    const oldStatus = entry.status;
     const removedPosition = entry.position;
 
-    entry = await storage.updateQueueEntry(id, {
-      status: 'cancelled',
-      position: undefined,
-      respondedAt: new Date(),
-      responseType: 'cancelled'
-    });
+    entry = await storage.updateQueueEntry(id, { status });
 
-    if (removedPosition) {
+    // If it was waiting/called and now it's something else, reorder
+    if ((oldStatus === 'waiting' || oldStatus === 'called') && 
+        status !== 'waiting' && status !== 'called' && removedPosition) {
       // @ts-ignore
       await storage.reorderQueue(removedPosition);
     }
+
     res.json(entry);
   });
 
