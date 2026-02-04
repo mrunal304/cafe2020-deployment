@@ -198,10 +198,6 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="outline" size="sm" className="border-[#5C3317] text-[#5C3317] hover:bg-[#5C3317] hover:text-white px-3">
-                          <Eye className="w-4 h-4 mr-1.5" />
-                          View
-                        </Button>
                         {entry.status === 'waiting' ? (
                           <Button 
                             size="sm"

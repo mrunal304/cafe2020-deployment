@@ -45,7 +45,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
 
   const menuItems = [
     {
-      title: "Recent Activity",
+      title: "Active Queue",
       url: "/admin/dashboard",
       icon: LayoutDashboard,
     },
