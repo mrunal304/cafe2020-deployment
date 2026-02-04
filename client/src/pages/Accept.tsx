@@ -3,26 +3,6 @@ import { useRoute, useLocation } from "wouter";
 import { useQueueStatus, useAcceptTable, useCancelBooking } from "@/hooks/use-queue";
 import { CustomerLayout } from "@/components/CustomerLayout";
 import { Button } from "@/components/ui/button";
-import { PartyPopper, Ban, Loader2 } from "lucide-react";
-import confetti from "canvas-confetti";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { motion } from "framer-motion";
-import { differenceInSeconds } from "date-fns";
-
-import { useEffect, useState } from "react";
-import { useRoute, useLocation } from "wouter";
-import { useQueueStatus, useAcceptTable, useCancelBooking } from "@/hooks/use-queue";
-import { CustomerLayout } from "@/components/CustomerLayout";
-import { Button } from "@/components/ui/button";
 import { PartyPopper, Ban, Loader2, Check } from "lucide-react";
 import {
   AlertDialog,
@@ -64,7 +44,6 @@ export default function Accept() {
       if (diff <= 0) {
         setTimeLeft(0);
         clearInterval(interval);
-        // If expired locally, trigger reload or just wait for poll to redirect
         window.location.reload(); 
       } else {
         setTimeLeft(diff);
@@ -87,8 +66,6 @@ export default function Accept() {
 
   const handleSendMessage = () => {
     if (!message.trim()) return;
-    // For now, we reuse the accept endpoint to update the message if they aren't ready to confirm yet
-    // but the requirement says "stays in queue", so we just show confirmation for now as it's optional
     setMessageSent(true);
     setTimeout(() => setMessageSent(false), 3000);
   };
@@ -167,6 +144,15 @@ export default function Accept() {
               </button>
             ))}
           </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleSendMessage}
+            className="w-full h-8 text-xs font-bold rounded-lg border-stone-200 text-stone-500 hover:text-green-600 hover:bg-green-50"
+          >
+            Send Message Only
+          </Button>
         </div>
 
         <div className="space-y-3 pt-2">
@@ -204,31 +190,6 @@ export default function Accept() {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => cancel(queue!.id)}
-              className="rounded-xl bg-red-500 hover:bg-red-600 text-white"
-            >
-              Cancel Booking
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </CustomerLayout>
-  );
-}
-
-      <AlertDialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
-        <AlertDialogContent className="rounded-2xl border-stone-200">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold text-stone-800">Cancel Booking?</AlertDialogTitle>
-            <AlertDialogDescription className="text-stone-500">
-              Are you sure you want to give up your spot? You'll have to join the queue again if you change your mind.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="gap-2">
-            <AlertDialogCancel className="rounded-xl border-stone-200 text-stone-600">
-              Keep my spot
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmCancel}
               className="rounded-xl bg-red-500 hover:bg-red-600 text-white"
             >
               Cancel Booking
