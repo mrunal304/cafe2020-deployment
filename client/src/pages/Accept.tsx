@@ -60,12 +60,6 @@ export default function Accept() {
   }, [queue, id, setLocation]);
 
   const handleAccept = () => {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#22c55e', '#16a34a', '#4ade80']
-    });
     accept(queue!.id);
   };
 

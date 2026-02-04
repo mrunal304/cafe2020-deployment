@@ -2,11 +2,22 @@ import { CustomerLayout } from "@/components/CustomerLayout";
 import { CheckCircle, MapPin } from "lucide-react";
 import { useRoute } from "wouter";
 import { useQueueStatus } from "@/hooks/use-queue";
+import { useEffect } from "react";
+import confetti from "canvas-confetti";
 
 export default function Confirmed() {
   const [, params] = useRoute("/queue/:id/confirmed");
   const id = params?.id || "0";
   const { data: queue } = useQueueStatus(id);
+
+  useEffect(() => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#22c55e', '#16a34a', '#4ade80']
+    });
+  }, []);
 
   return (
     <CustomerLayout>
