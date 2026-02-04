@@ -1,0 +1,267 @@
+Complete Admin Panel Redesign - Full Specification
+Overall Layout Structure:
+Left Sidebar (Brown/Warm Color Theme - #5C3317):
+
+Header: "Admin Panel" at top with logo
+Menu items:
+
+🔲 Active Queue (selected by default, highlighted background)
+📊 Recent Activity
+
+
+Bottom section:
+
+Admin profile circle icon with name "admin"
+Role text: "Admin" (smaller, lighter text)
+🚪 "Sign Out" button
+
+
+
+Main Content Area (Cream/Beige Background - #F5F5DC):
+
+Full-width content display
+Clean, spacious padding around content
+
+
+Active Queue View (Default Screen):
+Page Header:
+
+Large heading: "Active Queue Overview"
+Subtitle: "Welcome back, here's what's happening today"
+Summary badge: "6 Waiting" (orange badge with count)
+
+Table Layout - Column Structure (Left to Right):
+| # | Customer | Party Size | Wait Time | Message 💬 | Date & Time | Status | Actions |
+Column Details:
+
+Queue Position (#):
+
+Large bold number: #1, #2, #3
+Colored left border on entire row:
+
+Blue (#0066FF) for positions #1-#3
+Orange (#FF8C00) for positions #4-#6
+Gray for lower positions
+
+
+
+
+Customer Column:
+
+Customer name (bold, dark brown #2C1810)
+Phone number below (smaller, gray #8B8B8B with + prefix)
+Phone icon 📞 (clickable, brown color)
+
+
+Party Size Column:
+
+Icon 👥 followed by number
+Example: "👥 2", "👥 4"
+Centered alignment
+
+
+Wait Time/Status Column:
+
+Current status text:
+
+"WAITING FOR RESPONSE..." (blue text #0066FF)
+"Ready to be seated" (green text #28A745)
+"15 mins wait" (gray text)
+
+
+Small loading spinner icon for waiting status
+
+
+Message Column 💬:
+
+Show customer message if sent
+Display format: "Running 10 mins late, stuck in traffic"
+Truncate after 50 characters with "..."
+Click to expand in modal/popup
+If no message: Show "—" or "No message" in light gray
+New message indicator: Green dot or "New" badge
+
+
+Date & Time Column:
+
+📅 Calendar icon with date: "28 Jan 2026"
+🕐 Clock icon with time: "6:15 PM"
+Stacked vertically
+Gray text (#6B6B6B)
+Relative time below: "2 days ago", "3 hours ago"
+
+
+Status Column:
+
+Status pill/badge with colored background:
+
+"Pending" - Orange/yellow background (#FFA500), white text
+"Confirmed" - Green background (#28A745), white text
+"Waiting" - Blue background (#0066FF), white text
+"Seated" - Purple background (#6F42C1), white text
+
+
+Rounded corners (border-radius: 12px)
+Padding: 6px 12px
+
+
+Actions Column:
+
+👁️ "View Details" button (outline style, brown border)
+📋 Copy icon button (small, icon only)
+✅ "Confirm Arrival" button (solid green #28A745, white text)
+OR 📞 "Call Now" button (solid blue #0066FF, white text)
+❌ Cancel icon (circle with X, light gray, clickable)
+Buttons aligned horizontally with spacing
+
+
+
+Row Design:
+
+Height: 70-80px (comfortable spacing)
+Background: White (#FFFFFF)
+Alternating rows (optional): Very light beige (#FAF9F6) for even rows
+Hover effect: Light brown highlight (#F0E6D2)
+Bottom border: Thin 1px light gray line (#E0E0E0)
+Padding: 15px vertical, 20px horizontal
+
+Header Row:
+
+Column titles: # | Customer | Party Size | Wait Time | Message 💬 | Date & Time | Status | Actions
+Bold text (#2C1810)
+Background: Light brown (#D4C4B0)
+Sticky position (stays at top when scrolling)
+Height: 50px
+
+Table Features:
+
+Sortable columns (click header to sort)
+Search bar above table: "Search customers..."
+Filter options: "All", "Waiting", "Confirmed", "Ready"
+Auto-refresh indicator: "Updated 5 seconds ago"
+
+Message Popup/Modal (when clicked):
+
+White card with shadow
+Title: "Message from [Customer Name]"
+Full message text (up to 500 characters)
+Timestamp: "Sent 5 mins ago"
+"Mark as Read" button
+"Reply" button (optional)
+Close X button
+
+Empty State:
+
+Center aligned content
+Icon: 🎉 or 📋
+Heading: "No customers in queue"
+Subtext: "New bookings will appear here automatically"
+Light gray text
+
+
+Recent Activity View:
+Page Header:
+
+Large heading: "Recent Activity Overview"
+Subtitle: "Track completed and cancelled bookings"
+
+Card-Based List Layout:
+
+Vertical stack of cards
+Each card shows:
+
+Booking number: "#22 neesha" (bold)
+Party size: "4 people" (gray text)
+Timestamp: "11 minutes ago" (top right, light gray)
+Status badge: "CONFIRMED" (green) or "CANCELLED" (red)
+Right-aligned on same line as timestamp
+
+
+
+Card Design:
+
+White background
+Border: 1px light gray
+Border-radius: 8px
+Padding: 20px
+Margin: 10px between cards
+Box shadow: Subtle shadow on hover
+
+Status Badge Colors:
+
+CONFIRMED: Green (#28A745) background, white text
+CANCELLED: Red (#DC3545) background, white text
+COMPLETED: Blue (#0066FF) background, white text
+
+List Order:
+
+Most recent at top
+Show last 20-30 activities
+"Load More" button at bottom
+
+
+Shared Design Elements:
+Color Palette:
+
+Primary Brown: #5C3317 (sidebar)
+Light Brown: #8B6B47 (accents)
+Cream/Beige: #F5F5DC (main background)
+White: #FFFFFF (cards, table rows)
+Green: #28A745 (success, confirmed)
+Blue: #0066FF (active, waiting)
+Orange: #FFA500 (pending, warning)
+Red: #DC3545 (cancelled, error)
+Gray Text: #6B6B6B
+
+Typography:
+
+Headings: Serif font (like Playfair Display or Georgia)
+Body/UI: Sans-serif (like Inter, Roboto, or System UI)
+Heading sizes: 28px (main), 16px (subtitles)
+Body text: 14px
+Small text: 12px (timestamps, labels)
+
+Buttons:
+
+Primary: Solid color, white text, rounded (8px)
+Secondary: Outline style, colored border and text
+Hover: Slightly darker shade + subtle lift shadow
+Padding: 10px 20px
+Font weight: 600 (semi-bold)
+
+Icons:
+
+Consistent style throughout (use same icon library)
+Size: 18-20px
+Color: Match text or button color
+
+Responsive Behavior:
+
+Sidebar collapses to hamburger menu on mobile
+Table converts to cards on smaller screens
+Stack columns vertically on mobile
+Actions menu becomes dropdown "⋮" icon
+
+Real-Time Features:
+
+WebSocket or polling every 30 seconds
+New entry animation: Slide in from top
+Update animation: Brief highlight flash
+Sound notification (optional) for new bookings
+Browser notification for urgent messages
+
+Accessibility:
+
+High contrast text
+Keyboard navigation support
+Screen reader labels
+Focus indicators on interactive elements
+
+
+Default Behavior on Login:
+
+Admin logs in
+Lands on "Active Queue Overview" (default)
+Table loads with current queue
+Real-time updates start automatically
+"Active Queue" menu item is highlighted in sidebar

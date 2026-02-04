@@ -13,6 +13,7 @@ import Confirmed from "@/pages/Confirmed";
 import Expired from "@/pages/Expired";
 import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
+import AdminActivity from "@/pages/admin/Activity";
 
 function Router() {
   return (
@@ -27,6 +28,7 @@ function Router() {
       {/* Admin Routes */}
       <Route path="/admin" component={AdminLogin} />
       <Route path="/admin/dashboard" component={AdminDashboard} />
+      <Route path="/admin/activity" component={AdminActivity} />
 
       {/* Fallback */}
       <Route component={NotFound} />
