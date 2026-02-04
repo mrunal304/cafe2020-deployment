@@ -4,6 +4,16 @@ import { useQueueStatus, useAcceptTable, useCancelBooking } from "@/hooks/use-qu
 import { CustomerLayout } from "@/components/CustomerLayout";
 import { Button } from "@/components/ui/button";
 import { PartyPopper, Ban, Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { motion } from "framer-motion";
 import { differenceInSeconds } from "date-fns";
 
@@ -17,6 +27,7 @@ export default function Accept() {
   const { mutate: cancel, isPending: isCancelling } = useCancelBooking();
 
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   // Countdown timer logic
   useEffect(() => {
@@ -52,9 +63,11 @@ export default function Accept() {
   };
 
   const handleCancel = () => {
-    if (confirm("Are you sure you want to give up your spot?")) {
-      cancel(queue!.id);
-    }
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancel = () => {
+    cancel(queue!.id);
   };
 
   if (isLoading || !queue) return null;
@@ -107,6 +120,28 @@ export default function Accept() {
           </Button>
         </div>
       </div>
+
+      <AlertDialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
+        <AlertDialogContent className="rounded-2xl border-stone-200">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-bold text-stone-800">Cancel Booking?</AlertDialogTitle>
+            <AlertDialogDescription className="text-stone-500">
+              Are you sure you want to give up your spot? You'll have to join the queue again if you change your mind.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2">
+            <AlertDialogCancel className="rounded-xl border-stone-200 text-stone-600">
+              Keep my spot
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCancel}
+              className="rounded-xl bg-red-500 hover:bg-red-600 text-white"
+            >
+              Cancel Booking
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </CustomerLayout>
   );
 }
