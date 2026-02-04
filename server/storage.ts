@@ -24,7 +24,7 @@ export interface IStorage {
   // Queue
   createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry>;
   getQueueEntry(id: string): Promise<QueueEntry | undefined>;
-  getQueueEntries(): Promise<QueueEntry[]>;
+  getQueueEntries(date?: string): Promise<QueueEntry[]>;
   updateQueueStatus(id: string, status: string): Promise<QueueEntry>;
   updateQueueEntry(id: string, updates: Partial<QueueEntry>): Promise<QueueEntry>;
   reorderQueue(removedPosition: number): Promise<void>;
@@ -145,12 +145,23 @@ export class MongoStorage implements IStorage {
     return mapped;
   }
 
-  async getQueueEntries(): Promise<QueueEntry[]> {
-    const entries = await MongoQueueEntry.find({ 
+  async getQueueEntries(date?: string): Promise<QueueEntry[]> {
+    const filter: any = {};
+    
+    if (date) {
+      const startOfDay = new Date(date);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(date);
+      endOfDay.setHours(23, 59, 59, 999);
+      filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    const activeEntries = await MongoQueueEntry.find({ 
+      ...filter,
       status: { $in: ['waiting', 'called'] } 
     }).sort({ createdAt: 1 });
     
-    const mapped = entries.map((e, index) => {
+    const mapped = activeEntries.map((e, index) => {
       const entry = this.mapQueueEntry(e);
       entry.position = index + 1;
       return entry;
@@ -158,6 +169,7 @@ export class MongoStorage implements IStorage {
 
     // Also get non-active entries for history, but sorted by most recent
     const inactive = await MongoQueueEntry.find({ 
+      ...filter,
       status: { $nin: ['waiting', 'called'] } 
     }).sort({ updatedAt: -1 });
     

@@ -1,0 +1,188 @@
+ADD DATE FILTER CALENDAR IN ADMIN PANEL - KEEP ALL EXISTING FUNCTIONALITY
+
+IMPORTANT: DO NOT CHANGE OR REMOVE ANY EXISTING FEATURES. Only ADD the date filter calendar functionality.
+
+REQUIREMENT:
+Add a date picker/calendar in the admin panel to filter bookings by date. The queue management system should continue working exactly as it does now, just add date filtering capability.
+
+WHAT TO ADD:
+
+1. FRONTEND CHANGES - Admin Panel Page:
+
+ADD a date picker component at the top of the admin queue page (near the "5 Waiting" button area or above the search bar).
+```jsx
+import { useState, useEffect } from 'react';
+// Use react-datepicker or any date picker library you prefer
+// If not installed: npm install react-datepicker
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
+// ADD this state in your admin queue component
+const [selectedDate, setSelectedDate] = useState(new Date()); // Default = today
+
+// ADD date filter UI - place it at the top of the page
+<div className="date-filter-section" style={{ 
+  display: 'flex', 
+  alignItems: 'center', 
+  gap: '10px', 
+  marginBottom: '20px' 
+}}>
+  <label>Filter by Date:</label>
+  <DatePicker
+    selected={selectedDate}
+    onChange={(date) => setSelectedDate(date)}
+    dateFormat="dd MMM yyyy"
+    className="date-picker-input"
+  />
+  
+  {/* Quick filter buttons */}
+  <button onClick={() => setSelectedDate(new Date())}>
+    Today
+  </button>
+  <button onClick={() => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    setSelectedDate(yesterday);
+  }}>
+    Yesterday
+  </button>
+</div>
+
+<p>Showing bookings for: {selectedDate.toLocaleDateString('en-GB', { 
+  day: '2-digit', 
+  month: 'short', 
+  year: 'numeric' 
+})}</p>
+```
+
+2. UPDATE THE FETCH BOOKINGS FUNCTION:
+
+MODIFY your existing fetch function to include the selected date:
+```javascript
+// ADD useEffect to refetch when date changes
+useEffect(() => {
+  fetchBookingsByDate(selectedDate);
+}, [selectedDate]);
+
+// MODIFY your existing fetch function
+const fetchBookingsByDate = async (date) => {
+  try {
+    // Format date as YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+    
+    // Call API with date parameter
+    const response = await fetch(`/api/bookings/by-date?date=${formattedDate}`);
+    const data = await response.json();
+    
+    // Update your bookings state (use whatever state variable you're already using)
+    setBookings(data);
+  } catch (error) {
+    console.error('Error fetching bookings:', error);
+  }
+};
+```
+
+3. BACKEND - ADD NEW API ROUTE:
+
+CREATE a new route (or modify existing route) to accept date parameter:
+```javascript
+// ADD this new route in your bookings routes file
+// Route: GET /api/bookings/by-date?date=2026-02-05
+
+router.get('/bookings/by-date', async (req, res) => {
+  try {
+    const { date } = req.query; // Format: YYYY-MM-DD
+    
+    // If no date provided, use today
+    const targetDate = date ? new Date(date) : new Date();
+    
+    // Create date range for the entire day
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    // Find all WAITING bookings for this date
+    const bookings = await Booking.find({
+      status: 'WAITING',
+      createdAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    })
+    .sort({ createdAt: 1 }) // Sort by oldest first
+    .exec();
+    
+    // Add sequential queue position numbers
+    const bookingsWithPosition = bookings.map((booking, index) => ({
+      ...booking.toObject(),
+      queuePosition: index + 1  // #1, #2, #3, #4...
+    }));
+    
+    // Return bookings with count
+    res.json({
+      bookings: bookingsWithPosition,
+      totalWaiting: bookingsWithPosition.length,
+      date: targetDate.toISOString().split('T')[0]
+    });
+    
+  } catch (error) {
+    console.error('Error fetching bookings by date:', error);
+    res.status(500).json({ error: 'Failed to fetch bookings' });
+  }
+});
+```
+
+4. INSTALL REQUIRED PACKAGE (if not already installed):
+```bash
+npm install react-datepicker
+```
+
+5. STYLING (Optional - add if needed):
+```css
+.date-filter-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.date-picker-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.date-filter-section button {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.date-filter-section button:hover {
+  background: #0056b3;
+}
+```
+
+IMPORTANT REMINDERS:
+- Keep ALL existing functionality intact (search, call now buttons, status updates, etc.)
+- Only ADD the date filter feature, don't remove or modify existing features
+- Default to showing TODAY's bookings when page loads
+- Ensure queue position numbers (#1, #2, #3...) are calculated correctly based on filtered date
+- Update the "X Waiting" counter to show count for selected date
+- Test with different dates to ensure filtering works correctly
+
+EXPECTED RESULT:
+- Admin can select any date from calendar
+- Queue shows only bookings from that selected date
+- Quick buttons for "Today" and "Yesterday" work correctly
+- All other features (Call Now, Status updates, Search) continue working as before
+- Queue positions are numbered correctly (#1, #2, #3...) for the filtered date

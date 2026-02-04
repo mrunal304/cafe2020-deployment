@@ -9,6 +9,8 @@ import { useUser } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Table,
   TableBody,
@@ -28,7 +30,10 @@ import {
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { data: user, isLoading: isUserLoading } = useUser();
-  const { data: queue, isLoading: isQueueLoading, refetch } = useQueueList();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+  
+  const { data: queue, isLoading: isQueueLoading, refetch } = useQueueList(formattedDate);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] = useState<{name: string, message: string} | null>(null);
@@ -99,6 +104,48 @@ export default function AdminDashboard() {
           <Badge className="bg-[#FFA500] hover:bg-[#FFA500] text-white px-6 py-2 rounded-full text-sm font-bold self-start md:self-auto shadow-sm">
             {waitingList.length} Waiting
           </Badge>
+        </div>
+
+        {/* Date Filter */}
+        <div className="flex flex-col md:flex-row items-center gap-6 bg-white/50 p-6 rounded-xl border border-[#E0E0E0]">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <span className="text-sm font-bold text-[#4A2810] uppercase tracking-wider whitespace-nowrap">Filter by Date:</span>
+            <div className="relative">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date: Date | null) => date && setSelectedDate(date)}
+                dateFormat="dd MMM yyyy"
+                className="w-full md:w-48 px-4 py-2 bg-white border border-[#E0E0E0] rounded-lg text-sm font-medium text-[#2C1810] focus:outline-none focus:ring-2 focus:ring-[#5C3317]/20"
+              />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setSelectedDate(new Date())}
+              className="bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
+            >
+              Today
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => {
+                const yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                setSelectedDate(yesterday);
+              }}
+              className="bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
+            >
+              Yesterday
+            </Button>
+          </div>
+
+          <div className="md:ml-auto text-sm font-medium text-[#6B6B6B]">
+            Showing bookings for: <span className="text-[#2C1810] font-bold">{format(selectedDate, "dd MMM yyyy")}</span>
+          </div>
         </div>
 
         {/* Table Controls */}

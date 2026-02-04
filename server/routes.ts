@@ -112,7 +112,8 @@ export async function registerRoutes(
 
   app.get(api.queue.list.path, async (req, res) => {
     // In production, protect this: if (!req.isAuthenticated()) return res.sendStatus(401);
-    const entries = await storage.getQueueEntries();
+    const { date } = req.query;
+    const entries = await storage.getQueueEntries(date as string | undefined);
     res.json(entries);
   });
 
