@@ -20,7 +20,7 @@ export function AnnouncementBanner() {
           100% { transform: translateX(-50%); }
         }
         .animate-scroll-banner {
-          animation: scroll-banner 30s linear infinite;
+          animation: scroll-banner 45s linear infinite;
         }
       `}} />
     </div>
