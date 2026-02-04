@@ -1,0 +1,51 @@
+There is a bug in the messaging system. The "I'm Coming!" button works perfectly, but the "Send Message Only" button is not saving/displaying messages in the admin panel.
+
+**Issue Description:**
+
+1. **Working Correctly:**
+   - "I'm Coming!" button → Works perfectly
+   - Messages sent via "I'm Coming!" appear in admin panel
+
+2. **Not Working:**
+   - "Send Message Only" button → NOT working
+   - When users type a message (e.g., "late coming") and click "Send Message Only"
+   - The message does NOT appear in the admin panel's "Message" column
+   - Admin panel still shows "No special requests" instead of the actual message
+
+**User Side (Image 2 - Acceptance Page):**
+- Message input field: "MESSAGE (OPTIONAL)"
+- User types custom message like "late coming"
+- Quick reply buttons: "Running 5 mins late", "Be there in 10 mins", "Still coming"
+- Two buttons:
+  - "Send Message Only" ← THIS IS NOT WORKING
+  - "I'm Coming!" ← This works fine
+
+**Admin Side (Image 1):**
+- Messages sent via "Send Message Only" are not appearing in the "Message" column
+- Should display the user's message text but shows "No special requests" instead
+
+**Required Fix:**
+
+1. **"Send Message Only" Button:**
+   - Check the onClick handler for "Send Message Only" button
+   - Ensure it's capturing the message input value
+   - Verify the API call includes the message in the request payload
+   - Make sure it's saving to the same database field as "I'm Coming!" button
+   - Ensure proper status update (if needed) when only sending message
+
+2. **Comparison:**
+   - Compare the "Send Message Only" button logic with "I'm Coming!" button logic
+   - "I'm Coming!" works, so use similar approach for "Send Message Only"
+   - Both should save messages to the same field/column
+
+3. **Testing:**
+   - Test that typing a message and clicking "Send Message Only" saves the message
+   - Verify the message appears in admin panel's Message column
+   - Ensure it works for both custom typed messages and quick reply selections
+
+**Expected Behavior:**
+- User types "late coming" → Clicks "Send Message Only" → Admin sees "late coming" in Message column
+- User clicks "Running 5 mins late" → Clicks "Send Message Only" → Admin sees "Running 5 mins late"
+- Both "Send Message Only" and "I'm Coming!" should handle messages the same way
+
+Please fix the "Send Message Only" button functionality so messages are properly saved and displayed in the admin panel.
