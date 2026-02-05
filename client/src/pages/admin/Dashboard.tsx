@@ -202,7 +202,7 @@ export default function AdminDashboard() {
                     key={entry.id} 
                     className={`h-20 hover:bg-[#F0E6D2] transition-colors border-l-4 ${getBorderColor(index)} border-b-[#E0E0E0]`}
                   >
-                    <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.status === 'waiting' || entry.status === 'called' ? entry.position : entry.queueNumber}</TableCell>
+                    <TableCell className="font-bold text-lg text-[#2C1810]">#{entry.position || index + 1}</TableCell>
                     <TableCell>
                       <div className="flex flex-col">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={() => setSelectedMessage({ name: entry.name, message: entry.message || "No special requests" })}>

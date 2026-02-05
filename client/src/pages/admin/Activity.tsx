@@ -47,6 +47,18 @@ export default function AdminActivity() {
     entry.name.toLowerCase().includes(searchTerm.toLowerCase())
   ).sort((a, b) => new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime()) || [];
 
+  const getStatusLabel = (status: string) => {
+    switch(status) {
+      case 'called': return 'Called';
+      case 'confirmed': return 'Confirmed';
+      case 'completed': return 'Finished';
+      case 'cancelled': return 'Cancelled';
+      case 'left': return 'Left Queue';
+      case 'expired': return 'Expired';
+      default: return status;
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-8">
@@ -208,9 +220,23 @@ function StatusBadge({ status }: { status: string }) {
     completed: "bg-[#28A745] text-white", // Display completed as green "CONFIRMED"
     cancelled: "bg-[#DC3545] text-white",
     expired: "bg-gray-400 text-white",
+    called: "bg-[#0066FF] text-white",
+    left: "bg-gray-500 text-white",
   };
 
-  const label = status === 'completed' ? 'confirmed' : status;
+  const getStatusLabel = (status: string) => {
+    switch(status) {
+      case 'called': return 'Called';
+      case 'confirmed': return 'Confirmed';
+      case 'completed': return 'Finished';
+      case 'cancelled': return 'Cancelled';
+      case 'left': return 'Left Queue';
+      case 'expired': return 'Expired';
+      default: return status;
+    }
+  };
+
+  const label = getStatusLabel(status);
 
   return (
     <span className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-[12px] ${styles[status as keyof typeof styles] || "bg-gray-400 text-white"}`}>

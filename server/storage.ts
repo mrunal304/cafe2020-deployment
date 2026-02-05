@@ -102,17 +102,19 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 });
+    const lastEntry = await (MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }) as any).exec();
     const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
-    const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }).exec();
-    const nextQueueNumber = ((lastQueueNumberEntry as any)?.queueNumber || 0) + 1;
+    
+    // Use an explicit cast to any to avoid Mongoose Query type issues with older definitions
+    const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any).exec();
+    const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
 
     // Double check for duplicate key if someone else inserted
     let finalQueueNumber = nextQueueNumber;
-    let existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
+    let existing = await (MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }) as any).exec();
     while (existing) {
       finalQueueNumber++;
-      existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
+      existing = await (MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }) as any).exec();
     }
 
     const newEntry = await MongoQueueEntry.create({
@@ -170,7 +172,7 @@ export class MongoStorage implements IStorage {
     const entries = await MongoQueueEntry.find({ 
       ...filter,
       status: { $in: activeStatuses } 
-    }).sort({ createdAt: 1 });
+    }).sort({ createdAt: 1 }).exec();
     
     const mapped = entries.map((e, index) => {
       const entry = this.mapQueueEntry(e);
@@ -187,7 +189,7 @@ export class MongoStorage implements IStorage {
     const inactive = await MongoQueueEntry.find({ 
       ...filter,
       status: { $nin: ['waiting', 'called', 'confirmed'] } 
-    }).sort({ updatedAt: -1 });
+    }).sort({ updatedAt: -1 }).exec();
     
     return [...mapped, ...inactive.map(e => this.mapQueueEntry(e))];
   }
