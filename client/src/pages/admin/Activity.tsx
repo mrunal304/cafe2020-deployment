@@ -205,14 +205,16 @@ export default function AdminActivity() {
 function StatusBadge({ status }: { status: string }) {
   const styles = {
     confirmed: "bg-[#28A745] text-white",
-    completed: "bg-[#0066FF] text-white",
+    completed: "bg-[#28A745] text-white", // Display completed as green "CONFIRMED"
     cancelled: "bg-[#DC3545] text-white",
     expired: "bg-gray-400 text-white",
   };
 
+  const label = status === 'completed' ? 'confirmed' : status;
+
   return (
     <span className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-[12px] ${styles[status as keyof typeof styles] || "bg-gray-400 text-white"}`}>
-      {status}
+      {label}
     </span>
   );
 }

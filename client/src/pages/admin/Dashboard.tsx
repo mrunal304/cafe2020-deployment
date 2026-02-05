@@ -335,13 +335,15 @@ function StatusBadge({ status }: { status: string }) {
     seated: "bg-[#6F42C1] text-white",
     called: "bg-[#0066FF] text-white",
     cancelled: "bg-[#DC3545] text-white",
-    completed: "bg-[#0066FF] text-white",
+    completed: "bg-[#28A745] text-white", // Completed also green "confirmed"
     expired: "bg-gray-400 text-white",
   };
 
+  const label = status === 'completed' ? 'confirmed' : status;
+
   return (
     <span className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-[12px] ${styles[status as keyof typeof styles] || styles.waiting}`}>
-      {status}
+      {label}
     </span>
   );
 }
