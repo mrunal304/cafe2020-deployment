@@ -102,18 +102,18 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastEntry = await (MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }) as any).exec();
+    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }).exec();
     const nextPosition = lastEntry && typeof lastEntry.position === 'number' ? lastEntry.position + 1 : 1;
     
-    const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any).exec();
+    const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }).exec();
     const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
 
     // Double check for duplicate key if someone else inserted
     let finalQueueNumber = nextQueueNumber;
-    let existing = await (MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }) as any).exec();
+    let existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
     while (existing) {
       finalQueueNumber++;
-      existing = await (MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }) as any).exec();
+      existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
     }
 
     const newEntry = await MongoQueueEntry.create({
@@ -171,35 +171,31 @@ export class MongoStorage implements IStorage {
     }
 
     const activeStatuses = statuses || ['waiting', 'called', 'confirmed'];
-    const entries = await (MongoQueueEntry.find({ 
+    const entries = await MongoQueueEntry.find({ 
       ...filter,
       status: { $in: activeStatuses } 
-    }).sort({ updatedAt: -1 }) as any).exec();
+    }).sort({ createdAt: 1 }).exec();
     
-    const mapped = entries.map((e: any) => {
+    const mapped = entries.map((e: any, index: number) => {
       const entry = this.mapQueueEntry(e);
-      // Only set position for truly active ones if no statuses filter was provided
-      if (!statuses && ['waiting', 'called', 'confirmed'].includes(entry.status)) {
-         // position is set based on creation order for active ones
+      if (['waiting', 'called', 'confirmed'].includes(entry.status)) {
+        entry.position = index + 1;
+      } else {
+        entry.position = 0;
       }
       return entry;
     });
 
-    // If statuses were provided, we already filtered and sorted, just return
     if (statuses) {
       return mapped;
     }
 
-    // Default behavior for Dashboard (Active Queue)
-    const activeEntries = mapped.filter((e: any) => ['waiting', 'called', 'confirmed'].includes(e.status)).sort((a: any, b: any) => a.createdAt.getTime() - b.createdAt.getTime());
-    activeEntries.forEach((e: any, i: number) => e.position = i + 1);
-
-    const inactiveEntries = await (MongoQueueEntry.find({ 
+    const inactiveEntries = await MongoQueueEntry.find({ 
       ...filter,
       status: { $nin: ['waiting', 'called', 'confirmed'] } 
-    }).sort({ updatedAt: -1 }) as any).exec();
+    }).sort({ updatedAt: -1 }).exec();
     
-    return [...activeEntries, ...inactiveEntries.map((e: any) => this.mapQueueEntry(e))];
+    return [...mapped, ...inactiveEntries.map((e: any) => this.mapQueueEntry(e))];
   }
 
   async updateQueueStatus(id: string, status: string): Promise<QueueEntry> {

@@ -1,0 +1,124 @@
+# EXACT FIX - Based on Your Code
+
+## Problem Identified ✓
+
+You found the issue! The **popup** and **main card** are using data from **different sources**:
+
+- **Popup (Home.tsx)**: Uses `entry.position` from the join API response (CORRECT - real-time calculation)
+- **Main Card (QueueStatus.tsx)**: Uses `queue.position` from database (WRONG - may be stale/incorrect)
+
+The server is calculating position differently at different times!
+
+---
+
+## Solution: Fix the Backend API
+
+The real issue is in your **backend/server code**, not the frontend!
+
+### Backend Fix Required
+
+Find your API endpoint that returns queue data (probably in a file like `server/routes/queue.js` or `server/controllers/queue.js`).
+
+Look for the endpoint that the `QueueStatus` page calls (probably something like `GET /api/queue/:id`).
+
+**It currently returns:**
+```javascript
+{
+  id: 123,
+  queueNumber: 65,  // This is booking ID, not position!
+  position: null,   // Or wrong calculation
+  // ... other data
+}
+```
+
+**It should return real-time position like the join endpoint does:**
+```javascript
+{
+  id: 123,
+  queueNumber: 65,  // Keep this (booking ID)
+  position: 2,      // ← CALCULATE THIS: count of active bookings ahead + 1
+  // ... other data
+}
+```
+
+### Exact Backend Code to Add
+
+In your queue status endpoint, add this calculation:
+
+```javascript
+// Example location: server/routes/queue.js or similar
+
+router.get('/queue/:id', async (req, res) => {
+  const queueEntry = await getQueueEntry(req.params.id);
+  
+  // ADD THIS: Calculate real-time position
+  const position = await db.query(`
+    SELECT COUNT(*) + 1 as position
+    FROM queue_entries
+    WHERE status IN ('WAITING', 'CONFIRMED', 'CALLED')
+      AND created_at < $1
+      AND DATE(created_at) = CURRENT_DATE
+  `, [queueEntry.created_at]);
+  
+  // Return with calculated position
+  res.json({
+    ...queueEntry,
+    position: position.rows[0].position  // Real-time calculated position
+  });
+});
+```
+
+---
+
+## Alternative: Quick Frontend Fix (Temporary)
+
+If you can't change backend immediately, here's a temporary frontend fix:
+
+### In `client/src/pages/QueueStatus.tsx`
+
+Add this function to recalculate position:
+
+```typescript
+const calculatePosition = (queue: QueueEntry, allQueues: QueueEntry[]) => {
+  // Count how many active entries are ahead of this one
+  const position = allQueues.filter(q => 
+    ['WAITING', 'CONFIRMED', 'CALLED'].includes(q.status) &&
+    new Date(q.createdAt) < new Date(queue.createdAt)
+  ).length + 1;
+  
+  return position;
+};
+
+// Then use it in the display:
+const realTimePosition = calculatePosition(queue, allQueuesData);
+
+// Update the JSX:
+<h1 className="text-7xl font-black text-stone-900 tracking-tighter leading-none">
+  #{realTimePosition}
+</h1>
+```
+
+But this requires fetching all queue entries, which is inefficient. **Backend fix is better.**
+
+---
+
+## Recommended Approach
+
+**Fix the backend API endpoint** that returns queue status data so it calculates position the SAME WAY as the join endpoint does.
+
+Both endpoints should use IDENTICAL position calculation logic:
+```
+Position = COUNT(active bookings created before this one) + 1
+```
+
+---
+
+## Summary
+
+1. **Root cause**: Backend returning wrong/stale position in queue status endpoint
+2. **Fix**: Make queue status endpoint calculate position same as join endpoint
+3. **Result**: Both popup and main card will show same number
+
+**The frontend code is fine - it's the backend that needs fixing!**
+
+Let me know if you need help finding the backend queue status endpoint code.
