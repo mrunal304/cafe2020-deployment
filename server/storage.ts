@@ -145,7 +145,7 @@ export class MongoStorage implements IStorage {
     return mapped;
   }
 
-  async getQueueEntries(date?: string): Promise<QueueEntry[]> {
+  async getQueueEntries(date?: string, statuses?: string[]): Promise<QueueEntry[]> {
     const filter: any = {};
     
     if (date) {
@@ -156,9 +156,10 @@ export class MongoStorage implements IStorage {
       filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
     }
 
+    const activeStatuses = statuses || ['waiting', 'called'];
     const activeEntries = await MongoQueueEntry.find({ 
       ...filter,
-      status: { $in: ['waiting', 'called'] } 
+      status: { $in: activeStatuses } 
     }).sort({ createdAt: 1 });
     
     const mapped = activeEntries.map((e, index) => {
@@ -166,6 +167,11 @@ export class MongoStorage implements IStorage {
       entry.position = index + 1;
       return entry;
     });
+
+    // If statuses were provided, we only return those
+    if (statuses) {
+      return mapped;
+    }
 
     // Also get non-active entries for history, but sorted by most recent
     const inactive = await MongoQueueEntry.find({ 

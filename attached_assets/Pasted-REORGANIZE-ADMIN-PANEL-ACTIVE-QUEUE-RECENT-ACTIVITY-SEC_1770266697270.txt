@@ -1,0 +1,202 @@
+REORGANIZE ADMIN PANEL - ACTIVE QUEUE & RECENT ACTIVITY SECTIONS
+
+IMPORTANT: Keep ALL existing functionality intact. Only change the UI layout and section names as specified below.
+
+REQUIREMENTS:
+
+1. ACTIVE QUEUE SECTION:
+   - Change the header name from "Recent Activity" to "Queue Management" or "Live Queue"
+   - Keep the exact same table format that is currently shown
+   - Keep all functionality: Call Now buttons, Status updates, Search, Date filter, etc.
+   - Keep "0 Waiting" / "5 Waiting" button at top right
+   - This section should show WAITING bookings only
+
+2. RECENT ACTIVITY SECTION:
+   - Change this section to show a TABLE format (same table design as Active Queue)
+   - Currently it shows cards (#36 Mansi CANCELLED, #35 Mansi CANCELLED, etc.)
+   - Convert this to the SAME tabular format used in Active Queue section
+   - Show columns: #, Customer, Party Size, Wait Time, Message, Date & Time, Status, Actions
+   - This section should show COMPLETED and CANCELLED bookings
+   - Sort by most recent first (newest at top)
+
+DETAILED CHANGES:
+
+A. ACTIVE QUEUE PAGE (currently showing "Recent Activity" header):
+
+CHANGE:
+```jsx
+// Current header (WRONG):
+<h1>Recent Activity</h1>
+<p>Welcome back, here's what's happening today</p>
+
+// New header (CORRECT):
+<h1>Queue Management</h1>
+<p>Monitor and manage active customer queue in real-time</p>
+```
+
+Keep everything else exactly the same:
+- Date filter section
+- "0 Waiting" button
+- Search bar
+- Table with all bookings
+- All buttons and actions
+
+B. RECENT ACTIVITY PAGE (currently showing cards):
+
+REPLACE the card layout with TABLE format:
+```jsx
+// REMOVE current card layout:
+<div className="card">
+  <div>#36</div>
+  <div>Mansi</div>
+  <div>CANCELLED</div>
+</div>
+
+// ADD table format (same as Active Queue):
+<div className="date-filter-section">
+  {/* Add same date filter as Active Queue */}
+  <label>FILTER BY DATE:</label>
+  <DatePicker selected={selectedDate} onChange={setSelectedDate} />
+  <button onClick={() => setSelectedDate(new Date())}>Today</button>
+  <button onClick={handleYesterday}>Yesterday</button>
+  <p>Showing bookings for: {selectedDate.toLocaleDateString()}</p>
+</div>
+
+<table className="bookings-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Customer</th>
+      <th>Party Size</th>
+      <th>Wait Time</th>
+      <th>Message</th>
+      <th>Date & Time</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {recentBookings.map((booking) => (
+      <tr key={booking._id}>
+        <td>#{booking.queuePosition || booking._id.slice(-3)}</td>
+        <td>
+          {booking.name}
+          <br />
+          <small>{booking.phone}</small>
+        </td>
+        <td>{booking.numberOfPeople} people</td>
+        <td>-</td>
+        <td>{booking.specialRequests || 'No special requests'}</td>
+        <td>
+          {new Date(booking.createdAt).toLocaleDateString()}
+          <br />
+          {new Date(booking.createdAt).toLocaleTimeString()}
+        </td>
+        <td>
+          <span className={`status-badge ${booking.status.toLowerCase()}`}>
+            {booking.status}
+          </span>
+        </td>
+        <td>
+          {/* View details button or other actions */}
+          <button className="btn-view">View</button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+C. BACKEND API CHANGES:
+
+ADD/UPDATE endpoint for Recent Activity to fetch COMPLETED and CANCELLED bookings:
+```javascript
+// Route: GET /api/bookings/recent-activity?date=2026-02-05
+
+router.get('/bookings/recent-activity', async (req, res) => {
+  try {
+    const { date } = req.query;
+    const targetDate = date ? new Date(date) : new Date();
+    
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    const endOfDay = new Date(targetDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    // Find COMPLETED and CANCELLED bookings
+    const bookings = await Booking.find({
+      status: { $in: ['COMPLETED', 'CANCELLED'] },
+      updatedAt: {  // Use updatedAt instead of createdAt
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    })
+    .sort({ updatedAt: -1 }) // Most recent first
+    .exec();
+    
+    res.json({
+      bookings: bookings,
+      totalCompleted: bookings.filter(b => b.status === 'COMPLETED').length,
+      totalCancelled: bookings.filter(b => b.status === 'CANCELLED').length,
+      date: targetDate.toISOString().split('T')[0]
+    });
+    
+  } catch (error) {
+    console.error('Error fetching recent activity:', error);
+    res.status(500).json({ error: 'Failed to fetch recent activity' });
+  }
+});
+```
+
+D. STATUS BADGE STYLING:
+```css
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.status-badge.completed {
+  background: #4CAF50;
+  color: white;
+}
+
+.status-badge.cancelled {
+  background: #f44336;
+  color: white;
+}
+
+.status-badge.waiting {
+  background: #2196F3;
+  color: white;
+}
+```
+
+SUMMARY OF CHANGES:
+1. ✅ Active Queue page header: "Recent Activity" → "Queue Management" 
+2. ✅ Recent Activity page: Card layout → Table layout (same design as Active Queue)
+3. ✅ Recent Activity shows: COMPLETED + CANCELLED bookings
+4. ✅ Active Queue shows: WAITING bookings only
+5. ✅ Both pages have date filter functionality
+6. ✅ All existing features remain intact
+
+IMPORTANT NOTES:
+- DO NOT remove or change any existing functionality
+- DO NOT modify the routing or navigation
+- Keep all buttons (Call Now, Status changes, etc.) working
+- Keep search functionality working
+- Keep date filter working in both sections
+- Only change the UI layout and section headers as specified
+
+TEST CHECKLIST:
+- [ ] Active Queue shows only WAITING bookings
+- [ ] Active Queue header says "Queue Management" or "Live Queue"
+- [ ] Recent Activity shows table format (not cards)
+- [ ] Recent Activity shows COMPLETED and CANCELLED bookings
+- [ ] Date filter works in both sections
+- [ ] Search works in Active Queue
+- [ ] All buttons and actions still work
+- [ ] "X Waiting" counter updates correctly

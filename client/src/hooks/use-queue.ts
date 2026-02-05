@@ -45,11 +45,15 @@ export function useQueueStatus(id: string) {
 }
 
 // Admin: List all queue entries
-export function useQueueList(date?: string) {
+export function useQueueList(date?: string, statuses?: string[]) {
   return useQuery<QueueEntry[]>({
-    queryKey: [api.queue.list.path, date],
+    queryKey: [api.queue.list.path, date, statuses],
     queryFn: async () => {
-      const url = date ? `${api.queue.list.path}?date=${date}` : api.queue.list.path;
+      const params = new URLSearchParams();
+      if (date) params.append('date', date);
+      if (statuses) params.append('statuses', statuses.join(','));
+      
+      const url = params.toString() ? `${api.queue.list.path}?${params.toString()}` : api.queue.list.path;
       const res = await fetch(url, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch queue");
       return api.queue.list.responses[200].parse(await res.json());
