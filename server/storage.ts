@@ -102,9 +102,6 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }).exec() as any;
-    const nextPosition = lastEntry && typeof lastEntry.position === 'number' ? lastEntry.position + 1 : 1;
-    
     const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }).exec();
     const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
 
@@ -116,14 +113,33 @@ export class MongoStorage implements IStorage {
       existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber }).exec();
     }
 
-    const newEntry = await MongoQueueEntry.create({
+    const newEntryDoc = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
       queueNumber: finalQueueNumber,
-      position: nextPosition,
-      status: 'waiting'
+      status: 'waiting',
+      position: 0 // Will be calculated below
     });
-    return this.mapQueueEntry(newEntry);
+
+    // Calculate real-time position AFTER creation to ensure it's accurate
+    const position = await MongoQueueEntry.countDocuments({
+      status: { $in: ['waiting', 'called', 'confirmed'] },
+      $or: [
+        { createdAt: { $lt: newEntryDoc.createdAt } },
+        { createdAt: newEntryDoc.createdAt, _id: { $lt: newEntryDoc._id } }
+      ],
+      $expr: {
+        $eq: [
+          { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          { $dateToString: { format: "%Y-%m-%d", date: newEntryDoc.createdAt } }
+        ]
+      }
+    });
+
+    newEntryDoc.position = position + 1;
+    await newEntryDoc.save();
+
+    return this.mapQueueEntry(newEntryDoc);
   }
 
   async getQueueEntry(id: string): Promise<QueueEntry | undefined> {
