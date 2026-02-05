@@ -128,10 +128,10 @@ export default function QueueStatus() {
         <div className="text-center mb-6">
           <span className="text-stone-900 font-bold text-xs block mb-1">Your queue number is</span>
           <h1 className="text-7xl font-black text-stone-900 tracking-tighter leading-none">
-            # {queue.position || queue.queueNumber}
+            # {queue.position || 1}
           </h1>
           <div className="mt-2 text-stone-500 text-[10px] font-bold uppercase tracking-wider">
-            Welcome to the queue! You are #{queue.position || queue.queueNumber} in line.
+            Welcome to the queue! You are #{queue.position || 1} in line.
           </div>
         </div>
 

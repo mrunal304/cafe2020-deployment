@@ -1,0 +1,81 @@
+# Fix Queue Number Display Issue
+
+## Critical Problem to Fix
+
+### Issue: Wrong Queue Number Displayed to Customer
+**Current Behavior:**
+- Customer "riddhi" was at position #2 in the queue
+- After confirmation, the screen shows Queue Number #50 (WRONG!)
+- This is confusing for customers - they don't know their actual position
+
+**Expected Behavior:**
+- Customer should see their ACTUAL queue position number
+- If they were #2 in queue, confirmation screen should show "#2"
+- If they were #5 in queue, confirmation screen should show "#5"
+- The queue number should match their actual waiting position
+
+## Root Cause Analysis
+The queue number being displayed is likely:
+- A database auto-increment ID (booking ID #50)
+- NOT the actual queue position (which was #2)
+
+## Required Fix
+
+### 1. Display Actual Queue Position
+When customer confirms their booking:
+- Calculate their actual position in the queue (count of people ahead)
+- Display THIS position number on the confirmation screen
+- NOT the booking ID or any other number
+
+### 2. Queue Position Logic
+```
+Queue Position = Count of (Active + Confirmed + Called bookings before this customer) + 1
+
+Example:
+- If there are 1 people ahead with status WAITING/CONFIRMED/CALLED
+- This customer's queue position = 2 (not booking ID #50)
+```
+
+### 3. Keep All Recent Fixes
+✅ **DO NOT CHANGE** - Recent Activity is now working correctly:
+- Shows WAITING entries ✓
+- Shows CONFIRMED entries ✓
+- Shows CALLED entries ✓
+- Shows FINISHED entries ✓
+- Real-time updates working ✓
+
+**KEEP EVERYTHING ABOVE AS-IS**
+
+## Implementation Steps
+
+1. **Find the confirmation screen code** where queue number is displayed
+2. **Change the logic** from showing booking ID to showing actual queue position
+3. **Calculate position** by counting active bookings ahead of current customer
+4. **Update display** to show correct position number
+
+## Testing Checklist
+After fix, verify:
+- [ ] If customer is 2nd in queue → Shows "#2" on confirmation (not #50)
+- [ ] If customer is 1st in queue → Shows "#1" on confirmation
+- [ ] If customer is 10th in queue → Shows "#10" on confirmation
+- [ ] Recent Activity still shows all statuses (WAITING, CONFIRMED, CALLED, FINISHED)
+- [ ] All other functionality remains unchanged
+
+## Code Reference Points to Check
+
+Look for these areas in the code:
+1. **Customer confirmation page/component** - Where "You're Confirmed!" screen is shown
+2. **Queue number variable** - Currently showing booking ID instead of position
+3. **Query logic** - Should count bookings with status IN ('WAITING', 'CONFIRMED', 'CALLED') and created before current booking
+
+## Important Notes
+
+⚠️ **ONLY FIX QUEUE NUMBER DISPLAY** - Do not modify:
+- Recent Activity page (working correctly now)
+- Status display logic (working correctly now)
+- Real-time sync (working correctly now)
+- Any other feature
+
+✅ **Keep all recent improvements as-is**
+
+The ONLY change needed: Show actual queue position (e.g., #2) instead of booking ID (e.g., #50) on customer confirmation screen.

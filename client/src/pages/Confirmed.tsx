@@ -35,7 +35,7 @@ export default function Confirmed() {
 
         <div className="bg-orange-50 p-6 rounded-2xl border-2 border-dashed border-orange-200">
           <span className="block text-orange-400 text-sm font-bold uppercase tracking-widest mb-1">Queue Number</span>
-          <span className="block text-5xl font-black text-stone-800">#{queue?.position || queue?.queueNumber}</span>
+          <span className="block text-5xl font-black text-stone-800">#{queue?.position || 1}</span>
         </div>
 
         <div className="flex items-center justify-center gap-2 text-stone-400 text-sm">
