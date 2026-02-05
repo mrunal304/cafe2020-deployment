@@ -35,9 +35,11 @@ export default function Home() {
   const onSubmit = (data: FormData) => {
     joinQueue(data, {
       onSuccess: (entry) => {
+        // Use entry.position for real-time queue position
+        const position = entry.position || 1;
         toast({
           title: "Welcome to the queue!",
-          description: `You are #${entry.position} in line.`,
+          description: `You are #${position} in line.`,
         });
         setLocation(`/queue/${entry.id}`);
       },

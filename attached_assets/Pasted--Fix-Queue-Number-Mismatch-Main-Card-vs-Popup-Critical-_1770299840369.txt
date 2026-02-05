@@ -1,0 +1,85 @@
+# Fix Queue Number Mismatch - Main Card vs Popup
+
+## Critical Problem
+
+### Issue: Different Queue Numbers Displayed
+**Current Behavior:**
+- Main card shows: "Your queue number is #3" ✓ (Should be correct)
+- Text below shows: "YOU ARE #3 IN LINE" ✓ (Matches main card)
+- Bottom-right popup shows: "You are #4 in line" ✗ (WRONG - doesn't match!)
+- Customer: ANSH
+- Booking for: 4 people
+- Date: 05 Feb, 07:25 PM
+
+**Expected Behavior:**
+- Main card: "#3"
+- Text below: "#3 in line"
+- Popup notification: "You are #3 in line" (should match exactly)
+- ALL three places should show THE SAME number
+
+## Root Cause
+The popup is calculating queue position differently or using wrong variable:
+- Possibly counting the current customer as +1
+- Or using booking ID instead of queue position
+- Or has a different calculation logic
+
+## Required Fix
+
+### Update Popup Notification Code
+Find where the bottom-right popup displays:
+```
+"Welcome to the queue!
+You are #4 in line."
+```
+
+This should display the EXACT SAME queue position as shown in the main card (#3).
+
+### Ensure All Three Places Match
+1. Main card queue number: #3
+2. Text "YOU ARE #3 IN LINE": #3
+3. Popup "You are #X in line": Should be #3 (currently showing #4 - FIX THIS)
+
+## Implementation Steps
+
+1. **Locate popup notification component** (bottom-right corner)
+2. **Find the queue number variable** being used in popup
+3. **Replace with the SAME variable** used in main card (which correctly shows #3)
+4. **Verify all three displays use identical data source**
+
+## Code Logic
+The popup should use the exact same `queuePosition` variable:
+
+```javascript
+// Main card (CORRECT - shows #3):
+<h1>#{queuePosition}</h1>
+
+// Text below (CORRECT - shows #3):
+YOU ARE #{queuePosition} IN LINE
+
+// Popup (WRONG - currently shows #4, should show #3):
+You are #{queuePosition} in line  // Use SAME variable, no +1 or different calculation
+```
+
+## Testing Checklist
+After fix, verify:
+- [ ] Main card shows #3
+- [ ] Text shows "YOU ARE #3 IN LINE"  
+- [ ] Popup shows "You are #3 in line"
+- [ ] All three match exactly
+- [ ] Try with different queue positions (1, 2, 5, etc.) - all three should always match
+
+## Keep Everything Else Unchanged
+
+✅ **DO NOT MODIFY:**
+- Queue position calculation (working correctly in main card)
+- Booking details display
+- Date & time display
+- Leave Queue button
+- Any other functionality
+
+⚠️ **ONLY FIX:** Make popup notification show the SAME queue number as main card.
+
+## Summary
+**Problem:** Main card = #3, Popup = #4 (mismatch!)
+**Solution:** Popup should also show #3 (use same variable/calculation)
+**Goal:** All displays show identical queue number
