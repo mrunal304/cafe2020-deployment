@@ -127,11 +127,11 @@ export function useAcceptTable() {
 export function useCancelBooking() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (id: string) => {
-      const res = await apiRequest("POST", "/api/bookings/cancel", { bookingId: id });
+    mutationFn: async ({ id, reason }: { id: string, reason?: 'expired' | 'cancelled' }) => {
+      const res = await apiRequest("POST", "/api/bookings/cancel", { bookingId: id, reason });
       return res.json();
     },
-    onSuccess: (_, id) => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: [api.queue.status.path, id] });
       queryClient.invalidateQueries({ queryKey: [api.queue.list.path] });
     },

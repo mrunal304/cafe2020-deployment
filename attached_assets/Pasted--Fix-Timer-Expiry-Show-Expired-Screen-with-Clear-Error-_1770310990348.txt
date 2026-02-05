@@ -1,0 +1,250 @@
+# Fix Timer Expiry - Show Expired Screen with Clear Error Message
+
+## Current Problem (WRONG)
+When 10-minute timer reaches 00:00:
+- Directly shows booking form (Image 1)
+- No error message
+- Customer doesn't know why they're back at the form
+
+## Required Behavior (CORRECT)
+
+### When Timer Reaches 00:00
+
+**Step 1: Show "Booking Expired" Screen (Image 2)**
+```
+⚠️ Booking Expired
+
+Your 10-minute response time has expired.
+Please join the queue again to get a new spot.
+
+[← Join Queue Again] (black button)
+```
+
+**Step 2: When Customer Clicks "Join Queue Again"**
+- Redirect to booking form (Image 1)
+- Customer can fill details and join queue again
+
+---
+
+## Required Changes
+
+### Change 1: Detect Timer Expiry and Show Expired Screen
+
+In the component with "Your Table is Ready!" timer:
+
+```javascript
+const [showExpiredScreen, setShowExpiredScreen] = useState(false);
+
+// Monitor timer
+useEffect(() => {
+  if (timeRemaining === 0) {
+    // Timer expired
+    handleTimerExpiry();
+  }
+}, [timeRemaining]);
+
+const handleTimerExpiry = async () => {
+  // 1. Update booking status to EXPIRED
+  await updateBookingStatus(bookingId, 'EXPIRED');
+  
+  // 2. Show expired screen (DON'T redirect to form yet)
+  setShowExpiredScreen(true);
+};
+```
+
+### Change 2: Render Expired Screen
+
+```jsx
+{showExpiredScreen ? (
+  // SHOW EXPIRED SCREEN (Image 2)
+  <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl max-w-md mx-auto">
+    
+    {/* Error Icon - Red circle with exclamation */}
+    <div className="relative mb-6">
+      <div className="bg-red-100 rounded-full w-32 h-32 flex items-center justify-center">
+        <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center border-4 border-red-500">
+          <span className="text-red-500 text-4xl font-bold">!</span>
+        </div>
+      </div>
+    </div>
+    
+    {/* Heading */}
+    <h1 className="text-3xl font-bold text-stone-900 mb-4">
+      Booking Expired
+    </h1>
+    
+    {/* Error Message - CLEAR EXPLANATION */}
+    <p className="text-gray-600 text-center text-base leading-relaxed mb-2">
+      Your 10-minute response time has expired.
+    </p>
+    <p className="text-gray-600 text-center text-base leading-relaxed mb-8">
+      Please join the queue again to get a new spot.
+    </p>
+    
+    {/* Join Queue Again Button */}
+    <button 
+      onClick={() => navigate('/')} 
+      className="w-full bg-stone-900 text-white py-4 px-6 rounded-2xl font-semibold text-lg flex items-center justify-center gap-2 hover:bg-stone-800 transition"
+    >
+      <span>←</span>
+      <span>Join Queue Again</span>
+    </button>
+    
+  </div>
+) : (
+  // SHOW NORMAL TIMER SCREEN
+  <div>
+    {/* Your Table is Ready screen with timer, buttons, etc. */}
+  </div>
+)}
+```
+
+### Change 3: Error Message Should Be Clear
+
+**Bad Message (Generic):**
+```
+"Sorry, this booking has either expired or was cancelled."
+```
+❌ Customer doesn't know WHY it expired
+
+**Good Message (Clear & Specific):**
+```
+"Your 10-minute response time has expired.
+Please join the queue again to get a new spot."
+```
+✅ Customer understands exactly what happened
+
+### Change 4: Button Click Behavior
+
+```javascript
+const handleJoinAgainClick = () => {
+  // Navigate to home page with booking form
+  navigate('/');
+  
+  // This will show the form (Image 1):
+  // - Join the Queue
+  // - Your Name field
+  // - Mobile Number field
+  // - Party Size selector
+  // - Proceed button
+};
+```
+
+---
+
+## Exact Flow Required
+
+### Scenario: Customer Gets Called, Then Waits Too Long
+
+1. **Admin calls customer** (#1 in queue)
+2. **Customer sees:** "Your Table is Ready!" with timer showing 10:00
+3. **Timer counts down:** 09:59... 09:58... 01:00... 00:01...
+4. **Timer reaches 00:00**
+5. **Screen changes to:** "Booking Expired" screen (Image 2) ✓
+   - Shows red error icon
+   - Shows heading: "Booking Expired"
+   - Shows clear message: "Your 10-minute response time has expired. Please join the queue again to get a new spot."
+   - Shows button: "← Join Queue Again"
+6. **Customer clicks button**
+7. **Redirects to:** Booking form (Image 1) ✓
+   - Shows "Join the Queue"
+   - Shows name, mobile, party size fields
+   - Customer can submit new booking
+
+---
+
+## Error Messages for Different Scenarios
+
+### Timer Expired (Current Issue - Add This)
+```
+Booking Expired
+
+Your 10-minute response time has expired.
+Please join the queue again to get a new spot.
+
+[← Join Queue Again]
+```
+
+### Manually Cancelled by Customer (Already Working - Keep As Is)
+```
+Booking Expired
+
+Sorry, this booking has either expired or 
+was cancelled.
+
+[← Join Queue Again]
+```
+
+### Cancelled by Admin (If Needed)
+```
+Booking Expired
+
+This booking was cancelled by the restaurant.
+Please join the queue again if you'd like to visit.
+
+[← Join Queue Again]
+```
+
+---
+
+## Technical Implementation
+
+### File to Modify
+Probably: `client/src/pages/QueueStatus.tsx` or similar (the page showing "Your Table is Ready!")
+
+### Key Changes:
+1. **Add state:** `const [showExpiredScreen, setShowExpiredScreen] = useState(false);`
+2. **Detect timer = 0:** Update status to EXPIRED, set `showExpiredScreen = true`
+3. **Conditional render:** Show expired screen OR timer screen
+4. **Clear message:** Explain that 10-minute time expired
+5. **Button action:** Navigate to home page (`navigate('/')`)
+
+---
+
+## Testing Checklist
+
+- [ ] Admin calls customer
+- [ ] Customer sees timer: 10:00
+- [ ] Wait for timer to reach 00:00 (or test with 10 seconds for quick testing)
+- [ ] Timer reaches 00:00
+- [ ] Screen changes to "Booking Expired" (Image 2 style)
+- [ ] Error message clearly says "10-minute response time has expired"
+- [ ] "Join Queue Again" button is visible
+- [ ] Click button → Redirects to booking form (Image 1)
+- [ ] Customer can fill form and submit new booking
+- [ ] Status in database shows EXPIRED for old booking
+
+---
+
+## Keep Everything Else As-Is
+
+✅ **DO NOT CHANGE:**
+- Booking form design and functionality
+- "I'm Coming!" button (before timer expires)
+- Quick response buttons
+- Send Message Only
+- Cancel Booking (already shows expired screen)
+- Admin panel
+- Queue management
+- All other features
+
+⚠️ **ONLY CHANGE:**
+- When timer reaches 00:00 → Show expired screen FIRST (Image 2)
+- Add clear error message about 10-minute expiry
+- Button click → Then redirect to form (Image 1)
+
+---
+
+## Summary
+
+**Current Flow (Wrong):**
+Timer 00:00 → Directly to form ❌
+
+**Required Flow (Correct):**
+Timer 00:00 → Expired screen with message → Click button → Form ✓
+
+**Key Points:**
+1. Don't directly redirect to form
+2. Show "Booking Expired" screen first (Image 2 style)
+3. Clear message: "Your 10-minute response time has expired"
+4. Button click redirects to form (Image 1)

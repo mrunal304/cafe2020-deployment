@@ -34,7 +34,7 @@ export default function Accept() {
 
   // Countdown timer logic
   useEffect(() => {
-    if (!queue?.responseDeadline) return;
+    if (!queue?.responseDeadline || queue.status !== 'called') return;
 
     const interval = setInterval(() => {
       const now = new Date();
@@ -44,14 +44,22 @@ export default function Accept() {
       if (diff <= 0) {
         setTimeLeft(0);
         clearInterval(interval);
-        window.location.reload(); 
+        // Instead of reloading, we'll let the polling or a manual status update handle it
+        // but for immediate UI feedback we can trigger the expired state
       } else {
         setTimeLeft(diff);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [queue?.responseDeadline]);
+  }, [queue?.responseDeadline, queue?.status]);
+
+  // Handle timer expiry status update
+  useEffect(() => {
+    if (timeLeft === 0 && queue?.status === 'called') {
+      cancel({ id: queue.id, reason: 'expired' });
+    }
+  }, [timeLeft, queue?.status, queue?.id, cancel]);
 
   // Handle redirects
   useEffect(() => {
@@ -79,9 +87,9 @@ export default function Accept() {
 
   if (isLoading || !queue) return null;
 
-  const minutes = timeLeft ? Math.floor(timeLeft / 60) : 0;
-  const seconds = timeLeft ? timeLeft % 60 : 0;
-  const timerColor = (timeLeft || 600) < 120 ? "text-red-500" : (timeLeft || 600) < 300 ? "text-orange-500" : "text-green-600";
+  const minutes = timeLeft !== null ? Math.floor(timeLeft / 60) : 10;
+  const seconds = timeLeft !== null ? timeLeft % 60 : 0;
+  const timerColor = (timeLeft ?? 600) < 120 ? "text-red-500" : (timeLeft ?? 600) < 300 ? "text-orange-500" : "text-green-600";
 
   return (
     <CustomerLayout>
@@ -190,7 +198,7 @@ export default function Accept() {
               Keep my spot
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => cancel(queue!.id)}
+              onClick={() => cancel({ id: queue!.id, reason: 'cancelled' })}
               className="rounded-xl bg-red-500 hover:bg-red-600 text-white"
             >
               Cancel Booking

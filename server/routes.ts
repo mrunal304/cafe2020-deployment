@@ -256,16 +256,17 @@ export async function registerRoutes(
 
   // CANCEL BOOKING (USER SIDE - FROM ACCEPT PAGE)
   app.post("/api/bookings/cancel", async (req, res) => {
-    const { bookingId } = req.body;
+    const { bookingId, reason } = req.body;
     const entry = await storage.getQueueEntry(bookingId);
     if (!entry) return res.status(404).json({ message: "Not found" });
 
     const removedPosition = entry.position;
+    const isExpired = reason === 'expired';
 
     const updated = await storage.updateQueueEntry(bookingId, {
-      status: 'cancelled',
+      status: isExpired ? 'expired' : 'cancelled',
       position: undefined,
-      responseType: 'cancelled',
+      responseType: isExpired ? 'expired' : 'cancelled',
       respondedAt: new Date()
     });
 
