@@ -1,0 +1,76 @@
+"Implement functionality to automatically move booking data from Active Queue to Recent Activity when confirmed.
+Requirement
+When admin clicks the "Finish" button on a CONFIRMED booking:
+
+Remove the booking from Active Queue display
+Add the same booking to Recent Activity section
+Display with green "CONFIRMED" status badge
+Preserve all booking data (booking #, customer name, phone, party size, message, date & time)
+
+Implementation Steps
+Step 1: Update Booking Status
+When "Finish" button is clicked:
+javascriptasync function finishBooking(bookingId) {
+  // Update status to COMPLETED
+  await db.query(
+    `UPDATE bookings 
+     SET status = 'COMPLETED', 
+         completed_at = NOW() 
+     WHERE id = ? AND status = 'CONFIRMED'`,
+    [bookingId]
+  );
+}
+Step 2: Active Queue Filter Query
+Active Queue should ONLY show bookings that are NOT completed:
+sqlSELECT * FROM bookings 
+WHERE status IN ('PENDING', 'CONFIRMED') 
+ORDER BY created_at DESC;
+Step 3: Recent Activity Query
+Recent Activity should ONLY show completed/cancelled bookings:
+sqlSELECT * FROM bookings 
+WHERE status IN ('COMPLETED', 'CANCELLED') 
+ORDER BY completed_at DESC, cancelled_at DESC;
+Step 4: Frontend Auto-Refresh
+After clicking "Finish" button:
+javascriptconst handleFinish = async (bookingId) => {
+  // Call API to finish booking
+  await fetch(`/api/bookings/${bookingId}/finish`, { method: 'PUT' });
+  
+  // Refresh Active Queue (booking will disappear)
+  await fetchActiveQueue();
+  
+  // Refresh Recent Activity (booking will appear here)
+  await fetchRecentActivity();
+};
+```
+
+## **Expected Result**
+
+**Before clicking Finish:**
+- Active Queue: Shows booking #39 with CONFIRMED status
+- Recent Activity: Does not show booking #39
+
+**After clicking Finish:**
+- Active Queue: Booking #39 disappears (removed from list)
+- Recent Activity: Booking #39 appears with green "CONFIRMED" badge
+
+## **Data Flow**
+```
+Active Queue (status = CONFIRMED)
+         ↓
+   Click "Finish"
+         ↓
+Update status = 'COMPLETED'
+         ↓
+Remove from Active Queue filter
+         ↓
+Add to Recent Activity filter
+         ↓
+Recent Activity (display as "CONFIRMED")
+Key Points
+✅ Do NOT delete the record from database
+✅ Only UPDATE the status field
+✅ Filter queries automatically handle display
+✅ Refresh both sections after status change
+✅ Show as "CONFIRMED" (not "COMPLETED") in Recent Activity
+Implement this so bookings seamlessly move from Active Queue to Recent Activity when finished."
