@@ -102,7 +102,7 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }).exec();
+    const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }).exec() as any;
     const nextPosition = lastEntry && typeof lastEntry.position === 'number' ? lastEntry.position + 1 : 1;
     
     const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }).exec();
