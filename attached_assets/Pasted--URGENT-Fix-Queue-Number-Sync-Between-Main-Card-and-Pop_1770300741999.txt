@@ -1,0 +1,133 @@
+# URGENT: Fix Queue Number Sync Between Main Card and Popup
+
+## CRITICAL ISSUE - STILL NOT FIXED
+
+### Current Problem
+**Main Card Display:**
+- Shows: "Your queue number is #3"
+- Text: "YOU ARE #3 IN LINE"
+
+**Bottom-Right Popup Display:**
+- Shows: "You are #2 in line"
+
+**Customer Details:**
+- Name: MANSI
+- Booking for: 2 people
+- Date & Time: 05 Feb, 07:30 PM
+
+### THE ISSUE
+Main card and popup are showing DIFFERENT numbers (#3 vs #2). They MUST show the SAME number.
+
+## ROOT CAUSE TO INVESTIGATE
+
+The popup notification is clearly using a DIFFERENT calculation or data source than the main card. There are likely TWO separate pieces of code calculating queue position:
+
+1. **Main Card Code** - Calculating position as #3
+2. **Popup Code** - Calculating position as #2 (WRONG - should use same as main card)
+
+## REQUIRED FIX - DETAILED STEPS
+
+### Step 1: Find Both Components
+Locate these two separate components:
+1. Main card component (showing #3 correctly)
+2. Popup notification component (showing #2 incorrectly)
+
+### Step 2: Identify the Queue Position Variable
+In the main card code, find how `queuePosition` is being calculated. It likely looks like:
+```javascript
+const queuePosition = // some calculation that results in 3
+```
+
+### Step 3: Use EXACT SAME Logic in Popup
+The popup should use the IDENTICAL calculation. Do NOT create a separate calculation.
+
+**WRONG Approach (current):**
+```javascript
+// Main Card
+const queuePosition = calculateQueuePosition() // Returns 3
+
+// Popup (separate calculation)
+const popupPosition = bookingId - someOffset // Returns 2 (WRONG!)
+```
+
+**CORRECT Approach (needed):**
+```javascript
+// Main Card
+const queuePosition = calculateQueuePosition() // Returns 3
+
+// Popup (use SAME variable/function)
+const popupPosition = queuePosition // Also returns 3 (CORRECT!)
+```
+
+### Step 4: Share the Queue Position Value
+Make sure the popup receives the EXACT SAME `queuePosition` value that the main card displays:
+
+**Option A - Pass as Prop:**
+```javascript
+<PopupNotification queuePosition={queuePosition} />
+```
+
+**Option B - Use Same State/Context:**
+```javascript
+const { queuePosition } = useQueueContext() // Both components use this
+```
+
+**Option C - Pass in Notification Data:**
+```javascript
+showNotification({
+  message: `You are #${queuePosition} in line`,
+  queuePosition: queuePosition
+})
+```
+
+## VERIFICATION REQUIRED
+
+After implementing the fix, the developer MUST verify:
+1. Print/log the queue position in BOTH components
+2. Ensure both components are reading from the SAME source
+3. Test with multiple bookings to ensure it always matches
+
+## CODE CHECKLIST
+
+- [ ] Find main card component and its `queuePosition` calculation
+- [ ] Find popup notification component and its queue number display
+- [ ] Remove any separate calculation in popup
+- [ ] Make popup use the SAME `queuePosition` as main card
+- [ ] Test that both show identical numbers
+- [ ] Verify with console.log in both components before displaying
+
+## TESTING STEPS
+
+1. Create a new booking
+2. Check main card queue number (e.g., #3)
+3. Check popup queue number (must also be #3)
+4. Create another booking
+5. Verify both show same number again
+6. Test with different queue positions (1, 5, 10, etc.)
+
+## IMPORTANT REMINDERS
+
+✅ **KEEP AS-IS:**
+- All other functionality
+- Booking flow
+- Leave Queue button
+- Recent Activity page
+- Queue Management admin panel
+- Status updates
+- Everything else
+
+⚠️ **ONLY FIX:** Make popup show EXACT SAME queue number as main card
+
+## CRITICAL SUCCESS CRITERIA
+
+The fix is ONLY successful when:
+- Main card shows #X
+- Popup ALSO shows #X
+- Both ALWAYS match regardless of queue position
+- NO more mismatches like #3 vs #2
+
+## MESSAGE TO DEVELOPER
+
+This is a simple synchronization issue. The main card has the CORRECT queue position. The popup just needs to display the SAME number - nothing more, nothing less. 
+
+**Do not create a new calculation for the popup. Just use the existing one from the main card.**
