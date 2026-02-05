@@ -37,7 +37,7 @@ export default function Home() {
       onSuccess: (entry) => {
         // Use entry.position for real-time queue position
         // The popup and main card must show the same position.
-        const position = entry.position || entry.queueNumber || 1;
+        const position = entry.position || entry.queueNumber;
         console.log("=== POPUP DEBUG ===");
         console.log("Queue position being displayed in popup:", position);
         console.log("Entry data:", entry);
