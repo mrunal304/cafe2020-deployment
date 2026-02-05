@@ -104,13 +104,21 @@ export class MongoStorage implements IStorage {
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
     const lastEntry = await MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 });
     const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
-    const lastQueueNumberEntry = await MongoQueueEntry.findOne().sort({ queueNumber: -1 });
-    const nextQueueNumber = lastQueueNumberEntry ? lastQueueNumberEntry.queueNumber + 1 : 1;
+    const lastQueueNumberEntry = await MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 });
+    const nextQueueNumber = lastQueueNumberEntry && lastQueueNumberEntry.queueNumber ? lastQueueNumberEntry.queueNumber + 1 : 1;
+
+    // Double check for duplicate key if someone else inserted
+    let finalQueueNumber = nextQueueNumber;
+    let existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber });
+    while (existing) {
+      finalQueueNumber++;
+      existing = await MongoQueueEntry.findOne({ queueNumber: finalQueueNumber });
+    }
 
     const newEntry = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
-      queueNumber: nextQueueNumber,
+      queueNumber: finalQueueNumber,
       position: nextPosition,
       status: 'waiting'
     });
