@@ -20,13 +20,13 @@ export default function AdminActivity() {
   const [searchTerm, setSearchTerm] = useState("");
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const { data: queue, isLoading: isQueueLoading, refetch } = useQueueList(formattedDate, ["completed", "cancelled", "expired", "left"]);
+  const { data: queue, isLoading: isQueueLoading, refetch } = useQueueList(formattedDate, ["waiting", "called", "confirmed", "completed", "cancelled", "expired", "left"]);
 
   useEffect(() => {
     const timer = setInterval(() => {
       refetch();
       setLastUpdated(new Date());
-    }, 30000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [refetch]);
 

@@ -1,0 +1,72 @@
+# Queue Management Real-Time Sync Fix
+
+## Problem Summary
+The queue management system has real-time synchronization issues between the customer-facing confirmation screen and the admin panel.
+
+## Issues to Fix
+
+### Issue 1: Queue Number Not Showing in Real-Time
+**Current Behavior:**
+- When customer clicks "I am coming" button and gets confirmed (shows queue #49 on customer screen)
+- The entry appears in "Queue Management" page with "CONFIRMED" status
+- BUT it does NOT appear in "Recent Activity" page in real-time
+
+**Expected Behavior:**
+- After customer confirms ("I am coming"), the entry should appear IMMEDIATELY in both:
+  - Queue Management (Active Queue) - ✓ Already working
+  - Recent Activity page - ✗ NOT working (needs fix)
+
+### Issue 2: Only Shows After Manual Finish
+**Current Behavior:**
+- Entry only appears in "Recent Activity" when admin clicks "Finish" button from Queue Management
+- Entry #48 (harsh) shows with "FINISHED" status at 12:05 PM
+- Entry #47 (apeksha) shows with "FINISHED" status at 11:55 AM
+
+**Expected Behavior:**
+- Entries should appear in Recent Activity in real-time as they are created/confirmed
+- Recent Activity should show ALL booking statuses (WAITING, CONFIRMED, FINISHED, CANCELLED)
+
+## Required Changes
+
+### 1. Fix Real-Time Sync
+- When a new queue entry is created/confirmed, it should IMMEDIATELY appear in Recent Activity
+- Use proper real-time database listeners (Firestore onSnapshot or similar)
+- Ensure both "Active Queue" and "Recent Activity" pages are listening to the same data source
+
+### 2. Update Recent Activity Logic
+- Recent Activity should fetch and display entries in ALL statuses:
+  - WAITING
+  - CONFIRMED  
+  - FINISHED
+  - CANCELLED
+- Sort by most recent first (latest bookings on top)
+- Auto-refresh when new entries are added
+
+### 3. Keep All Other Functionality As-Is
+- Do NOT change the confirmation flow
+- Do NOT modify the customer-facing UI
+- Do NOT change the "Finish" button functionality
+- Keep all existing features intact
+- Only fix the real-time synchronization between Queue Management and Recent Activity
+
+## Technical Implementation Notes
+
+1. **Check Database Structure**: Ensure both pages are querying the same collection/table
+2. **Add Real-Time Listeners**: Implement live data listeners (e.g., Firestore `onSnapshot()`)
+3. **Update Filter Logic**: Recent Activity might have a filter that excludes CONFIRMED status - remove this
+4. **Test Flow**:
+   - Customer confirms → Should appear in both Active Queue AND Recent Activity immediately
+   - Admin finishes → Status updates to FINISHED in both pages
+   - Refresh pages → Data should persist correctly
+
+## Testing Checklist
+After implementing the fix, verify:
+- [ ] Customer confirms booking → Appears in Active Queue (already works)
+- [ ] Customer confirms booking → Appears in Recent Activity IMMEDIATELY (needs fix)
+- [ ] Admin clicks Finish → Status updates to FINISHED in both pages
+- [ ] Recent Activity shows all booking statuses
+- [ ] Real-time updates work without page refresh
+- [ ] All other functionality remains unchanged
+
+## Important Reminders
+⚠️ **KEEP EVERYTHING ELSE AS-IS** - Only fix the real-time sync issue, do not modify any other features or functionality.

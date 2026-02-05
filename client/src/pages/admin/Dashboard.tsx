@@ -45,7 +45,7 @@ export default function AdminDashboard() {
     const timer = setInterval(() => {
       refetch();
       setLastUpdated(new Date());
-    }, 30000);
+    }, 5000);
     return () => clearInterval(timer);
   }, [refetch]);
 

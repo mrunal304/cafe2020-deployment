@@ -105,7 +105,6 @@ export class MongoStorage implements IStorage {
     const lastEntry = await (MongoQueueEntry.findOne({ status: 'waiting' }).sort({ position: -1 }) as any).exec();
     const nextPosition = lastEntry && lastEntry.position ? lastEntry.position + 1 : 1;
     
-    // Use an explicit cast to any to avoid Mongoose Query type issues with older definitions
     const lastQueueNumberEntry = await (MongoQueueEntry.findOne({}, { queueNumber: 1 }).sort({ queueNumber: -1 }) as any).exec();
     const nextQueueNumber = (lastQueueNumberEntry?.queueNumber || 0) + 1;
 
@@ -169,29 +168,35 @@ export class MongoStorage implements IStorage {
     }
 
     const activeStatuses = statuses || ['waiting', 'called', 'confirmed'];
-    const entries = await MongoQueueEntry.find({ 
+    const entries = await (MongoQueueEntry.find({ 
       ...filter,
       status: { $in: activeStatuses } 
-    }).sort({ createdAt: 1 }).exec();
+    }).sort({ updatedAt: -1 }) as any).exec();
     
-    const mapped = entries.map((e, index) => {
+    const mapped = entries.map((e: any) => {
       const entry = this.mapQueueEntry(e);
-      entry.position = index + 1;
+      // Only set position for truly active ones if no statuses filter was provided
+      if (!statuses && ['waiting', 'called', 'confirmed'].includes(entry.status)) {
+         // position is set based on creation order for active ones
+      }
       return entry;
     });
 
-    // If statuses were provided, we only return those
+    // If statuses were provided, we already filtered and sorted, just return
     if (statuses) {
       return mapped;
     }
 
-    // Also get non-active entries for history, but sorted by most recent
-    const inactive = await MongoQueueEntry.find({ 
+    // Default behavior for Dashboard (Active Queue)
+    const activeEntries = mapped.filter((e: any) => ['waiting', 'called', 'confirmed'].includes(e.status)).sort((a: any, b: any) => a.createdAt.getTime() - b.createdAt.getTime());
+    activeEntries.forEach((e: any, i: number) => e.position = i + 1);
+
+    const inactiveEntries = await (MongoQueueEntry.find({ 
       ...filter,
       status: { $nin: ['waiting', 'called', 'confirmed'] } 
-    }).sort({ updatedAt: -1 }).exec();
+    }).sort({ updatedAt: -1 }) as any).exec();
     
-    return [...mapped, ...inactive.map(e => this.mapQueueEntry(e))];
+    return [...activeEntries, ...inactiveEntries.map((e: any) => this.mapQueueEntry(e))];
   }
 
   async updateQueueStatus(id: string, status: string): Promise<QueueEntry> {
