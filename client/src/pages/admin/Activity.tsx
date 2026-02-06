@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Input } from "@/components/ui/input";
+import { Download } from "lucide-react";
 
 export default function AdminActivity() {
   const [, setLocation] = useLocation();
@@ -20,6 +21,29 @@ export default function AdminActivity() {
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
   const [searchTerm, setSearchTerm] = useState("");
   const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const response = await fetch(`/api/export-bookings?date=${formattedDate}`);
+      if (!response.ok) throw new Error("Export failed");
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `bookings_${format(selectedDate, "dd-MMM-yyyy")}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Export error:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const { data: queue, isLoading: isQueueLoading, refetch } = useQueueList(formattedDate, ["waiting", "called", "confirmed", "completed", "cancelled", "expired", "left"]);
 
@@ -89,6 +113,20 @@ export default function AdminActivity() {
             className="flex-1 md:flex-none bg-white border-[#E0E0E0] text-[#2C1810] hover:bg-[#F0E6D2]"
           >
             Yesterday
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={isExporting}
+            onClick={handleExport}
+            className="flex-1 md:flex-none bg-[#5C3317] border-[#5C3317] text-white hover:bg-[#4A2810] gap-2"
+          >
+            {isExporting ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+            Export to Excel
           </Button>
         </div>
 

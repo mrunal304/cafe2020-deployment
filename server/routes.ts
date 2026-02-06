@@ -13,6 +13,8 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import twilio from "twilio"; 
+import ExcelJS from "exceljs";
+import { format } from "date-fns";
 
 const scryptAsync = promisify(scrypt);
 
@@ -276,6 +278,63 @@ export async function registerRoutes(
     }
 
     res.json(updated);
+  });
+
+  // EXPORT BOOKINGS
+  app.get("/api/export-bookings", async (req, res) => {
+    try {
+      const { date } = req.query;
+      if (!date) return res.status(400).json({ message: "Date is required" });
+
+      const entries = await storage.getQueueEntries(date as string, ['completed', 'cancelled', 'expired', 'left', 'confirmed']);
+      
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Bookings');
+
+      worksheet.columns = [
+        { header: 'Booking #', key: 'bookingNum', width: 15 },
+        { header: 'Customer Name', key: 'name', width: 25 },
+        { header: 'Phone Number', key: 'phone', width: 20 },
+        { header: 'Party Size', key: 'partySize', width: 12 },
+        { header: 'Wait Time', key: 'waitTime', width: 12 },
+        { header: 'Message', key: 'message', width: 30 },
+        { header: 'Booking Time', key: 'bookingTime', width: 25 },
+        { header: 'Status', key: 'status', width: 15 },
+      ];
+
+      entries.forEach(entry => {
+        worksheet.addRow({
+          bookingNum: `#${entry.queueNumber}`,
+          name: entry.name,
+          phone: entry.phoneNumber,
+          partySize: entry.numberOfPeople,
+          waitTime: entry.waitTime ? `${entry.waitTime}m` : '-',
+          message: entry.message || 'No special requests',
+          bookingTime: format(new Date(entry.createdAt!), "dd MMM yyyy, hh:mm a"),
+          status: entry.status.toUpperCase(),
+        });
+      });
+
+      // Style header
+      worksheet.getRow(1).font = { bold: true };
+      
+      const fileName = `bookings_${format(new Date(date as string), "dd-MMM-yyyy")}.xlsx`;
+      
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${fileName}`
+      );
+
+      await workbook.xlsx.write(res);
+      res.end();
+    } catch (err) {
+      console.error("Export Error:", err);
+      res.status(500).json({ message: "Failed to generate export" });
+    }
   });
 
   // CANCEL BOOKING (ADMIN SIDE)
