@@ -28,7 +28,7 @@ export default function Home() {
     defaultValues: {
       name: "",
       phoneNumber: "",
-      numberOfPeople: 2,
+      numberOfPeople: 0 as any,
     },
   });
 
@@ -130,18 +130,18 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            {/* Manual Entry Textbox with Placeholder */}
+            {/* Manual Entry Textbox with Example Placeholder */}
             <Input
               type="number"
-              {...form.register("numberOfPeople", { valueAsNumber: true })}
+              value={form.watch("numberOfPeople") || ''}
               min="1"
-              placeholder="Or manually enter party size"
+              placeholder="e.g. 8 (or select above)"
               className="
                 w-full text-center py-3 px-4 h-12
-                border border-stone-200 rounded-xl 
+                border-2 border-orange-500 rounded-xl 
                 bg-stone-50 text-stone-900 text-lg
-                placeholder:text-stone-400 placeholder:text-sm placeholder:font-normal
-                focus:outline-none focus:ring-2 focus:ring-orange-500
+                placeholder:text-stone-400 placeholder:text-base placeholder:font-normal
+                focus:outline-none focus:ring-2 focus:ring-orange-600
               "
               onChange={(e) => {
                 const value = e.target.value;

@@ -1,0 +1,253 @@
+# Add Placeholder Example in Party Size Textbox
+
+## Current Issue
+Party size textbox shows "0" by default, which looks like an error or confusing placeholder.
+
+## Required Change
+Party size textbox should show helpful placeholder text like:
+**"e.g. 8 (or select above)"**
+
+Similar to how Mobile Number field shows: "e.g. 9876543210"
+
+---
+
+## Visual Example
+
+### Current (Wrong):
+```
+Party Size
+[ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] [ 6 ]
+
+┌─────────────────────────────────────┐
+│                 0                   │  ← Shows 0 (confusing)
+└─────────────────────────────────────┘
+```
+
+### Required (Correct):
+```
+Party Size
+[ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] [ 6 ]
+
+┌─────────────────────────────────────┐
+│  e.g. 8 (or select above)          │  ← Helpful placeholder
+└─────────────────────────────────────┘
+```
+
+---
+
+## Code Changes
+
+### Change the Party Size Input:
+
+**Current (showing 0):**
+```jsx
+<input
+  type="number"
+  value={partySize}
+  className="..."
+/>
+```
+
+**Change To (helpful placeholder):**
+```jsx
+<input
+  type="number"
+  value={partySize || ''}
+  onChange={(e) => {
+    const value = e.target.value;
+    setPartySize(value === '' ? '' : Number(value));
+  }}
+  min="1"
+  placeholder="e.g. 8 (or select above)"
+  className="w-full text-center py-3 px-4 border-2 border-orange-500 rounded-xl bg-white text-stone-900 placeholder:text-stone-400 placeholder:text-base"
+/>
+```
+
+---
+
+## Consistency with Other Fields
+
+### Your Name Field:
+```
+Your Name
+┌─────────────────────────────────────┐
+│  e.g. Alex                         │  ← Example placeholder
+└─────────────────────────────────────┘
+Name is helpful!
+```
+
+### Mobile Number Field:
+```
+Mobile Number
+┌─────────────────────────────────────┐
+│  e.g. 9876543210                   │  ← Example placeholder
+└─────────────────────────────────────┘
+Please enter a valid 10-digit phone number
+```
+
+### Party Size Field (Should Match Style):
+```
+Party Size
+[ 1 ] [ 2 ] [ 3 ] [ 4 ] [ 5 ] [ 6 ]
+
+┌─────────────────────────────────────┐
+│  e.g. 8 (or select above)          │  ← Example placeholder
+└─────────────────────────────────────┘
+```
+
+---
+
+## Alternative Placeholder Options
+
+You can choose any of these placeholder texts:
+
+**Option 1 (Recommended):**
+```
+placeholder="e.g. 8 (or select above)"
+```
+
+**Option 2 (Simple):**
+```
+placeholder="e.g. 8"
+```
+
+**Option 3 (Instructional):**
+```
+placeholder="e.g. 10 or click button above"
+```
+
+**Option 4 (Very Clear):**
+```
+placeholder="Type party size or select 1-6 above"
+```
+
+I recommend **Option 1** because:
+- Matches the style of other fields (e.g. Alex, e.g. 9876543210)
+- Shows an example number (8) that's bigger than the buttons
+- Guides user that they can select buttons too
+
+---
+
+## Complete Party Size Component Code
+
+```jsx
+<div className="space-y-3">
+  {/* Label */}
+  <label className="text-stone-700 font-medium flex items-center gap-2">
+    <UsersIcon className="w-5 h-5 text-orange-500" />
+    Party Size
+  </label>
+  
+  {/* Quick Select Buttons 1-6 */}
+  <div className="grid grid-cols-6 gap-2">
+    {[1, 2, 3, 4, 5, 6].map((size) => (
+      <button
+        key={size}
+        type="button"
+        onClick={() => setPartySize(size)}
+        className={`
+          py-3 rounded-xl font-semibold text-lg transition
+          ${partySize === size 
+            ? 'bg-orange-500 text-white' 
+            : 'text-stone-600 hover:bg-stone-100'
+          }
+        `}
+      >
+        {size}
+      </button>
+    ))}
+  </div>
+  
+  {/* Manual Entry Textbox with Example Placeholder */}
+  <input
+    type="number"
+    value={partySize || ''}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (value === '' || Number(value) >= 0) {
+        setPartySize(value === '' ? '' : Number(value));
+      }
+    }}
+    min="1"
+    placeholder="e.g. 8 (or select above)"
+    className="
+      w-full text-center py-3 px-4 
+      border-2 border-orange-500 rounded-xl 
+      bg-white text-stone-900 text-base
+      placeholder:text-stone-400 placeholder:text-base
+      focus:outline-none focus:ring-2 focus:ring-orange-600
+    "
+  />
+</div>
+```
+
+---
+
+## Behavior
+
+### When Empty:
+- Shows: "e.g. 8 (or select above)" in light gray
+- User knows they can type OR select buttons
+
+### When Button Clicked (e.g., "3"):
+- Shows: "3"
+- Placeholder disappears
+- Orange border remains
+
+### When User Types (e.g., "15"):
+- Shows: "15"
+- Placeholder disappears
+- Accepts any number
+
+### When User Clears:
+- Shows: "e.g. 8 (or select above)" again
+- Placeholder reappears
+
+---
+
+## Validation Messages (Optional Improvements)
+
+You can also add a helper text below like other fields:
+
+```jsx
+{/* After the input, add: */}
+{partySize && partySize < 1 && (
+  <p className="text-red-500 text-sm mt-1">
+    Party size must be at least 1 person
+  </p>
+)}
+```
+
+But this is optional - the main change is just the placeholder text.
+
+---
+
+## Keep Everything Else As-Is
+
+✅ **DO NOT CHANGE:**
+- Buttons 1-6 styling and functionality
+- Border styling (orange border)
+- Form layout
+- Other fields (Name, Mobile)
+- Proceed button
+- Validation logic
+- All other features
+
+⚠️ **ONLY CHANGE:**
+- Replace "0" or empty value with placeholder: "e.g. 8 (or select above)"
+- Make textbox editable if not already
+- Allow manual typing of any number
+
+---
+
+## Summary
+
+**Current:** Textbox shows "0" (confusing)
+**Required:** Textbox shows "e.g. 8 (or select above)" when empty
+
+**Matches style of:**
+- Name field: "e.g. Alex"
+- Mobile field: "e.g. 9876543210"
+- Party size: "e.g. 8 (or select above)" ✓
+
+Clean, consistent, and user-friendly!
