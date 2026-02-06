@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function AnnouncementBanner() {
-  const text = "🎉 Special February Offer! Get 1 FREE Cheesecake on orders above ₹1200/- 🎉";
+  const text = "🚴 DELIVERY COMING SOON! 🚴";
   const repeatedText = Array(10).fill(text).join(" \u00A0\u00A0\u00A0\u00A0\u00A0 ");
 
   return (
