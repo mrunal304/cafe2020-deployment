@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
-import logoUrl from "@assets/images/cafe-twenty-twenty-logo.png";
-
 export function CustomerLayout({ children }: { children: ReactNode }) {
+  const logoUrl = "/cafe-twenty-twenty-logo.png";
   return (
     <div className="min-h-screen bg-[#F5E6D3] relative overflow-x-hidden flex flex-col items-center justify-center p-4">
       {/* Background Decorative Elements */}
