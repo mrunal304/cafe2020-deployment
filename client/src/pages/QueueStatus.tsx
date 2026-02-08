@@ -101,7 +101,7 @@ export default function QueueStatus() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-[var(--olive)] text-white w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm"
+            className="bg-[#4CAF50] text-white w-12 h-12 rounded-full flex items-center justify-center mb-3 shadow-sm"
           >
             <Check className="w-7 h-7 stroke-[3]" />
           </motion.div>
@@ -147,7 +147,7 @@ export default function QueueStatus() {
               variant="outline" 
               onClick={handleLeaveQueue}
               disabled={isLeaving}
-              className="bg-[var(--off-white)]/90 text-[var(--text-dark)] border-[var(--input-border)] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[var(--beige)] uppercase tracking-wide text-xs"
+              className="bg-[var(--off-white)]/90 text-[var(--text-dark)] border-[var(--input-border)] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#C46A3A] hover:border-[#C46A3A] hover:text-white transition-all duration-300 uppercase tracking-wide text-xs"
             >
               {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
             </Button>
