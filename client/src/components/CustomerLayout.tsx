@@ -16,11 +16,11 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
               className="w-32 h-auto object-contain"
             />
           </div>
-          <div className="mt-4 px-3 py-1 rounded-xl bg-[var(--off-white)]/90 shadow-sm text-center">
-            <h1 className="text-3xl font-bold text-[var(--text-dark)] leading-tight">
+          <div className="mt-4 px-3 py-1 rounded-xl bg-transparent text-center">
+            <h1 className="text-4xl font-bold text-[#4A3324] leading-tight drop-shadow-sm" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
               Cafe Twenty Twenty
             </h1>
-            <p className="text-[var(--text-dark)]/80 text-sm font-medium italic mt-0.5 tracking-wide font-display">
+            <p className="text-[#F7F3EE] text-lg font-normal italic mt-1 tracking-wider drop-shadow-md" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
               Roasted Rich. Served Rustic.
             </p>
           </div>

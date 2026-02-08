@@ -1,0 +1,384 @@
+UPDATE DELIVERY BANNER AND CAFE HEADING STYLING
+
+REQUIREMENTS:
+1. Change delivery banner background from transparent to terracotta
+2. Update "Cafe Twenty Twenty" heading text color
+3. Add tagline "Roasted Rich. Served Rustic." below heading
+4. Make tagline elegant and subtle
+
+═══════════════════════════════════════════════════════════════
+STEP 1: UPDATE DELIVERY BANNER BACKGROUND COLOR
+═══════════════════════════════════════════════════════════════
+
+Find the delivery banner CSS and update:
+
+OLD (WRONG):
+```css
+.delivery-banner {
+  background: transparent;
+  /* or rgba(255, 107, 53, 1) */
+}
+```
+
+NEW (CORRECT):
+```css
+.delivery-banner {
+  background: #C46A3A;
+  /* Terracotta color */
+  color: white;
+  padding: 10px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Alternative darker terracotta */
+.delivery-banner.dark {
+  background: #A8572E;
+  /* Terracotta dark */
+}
+
+/* Scrolling animation */
+.delivery-banner {
+  animation: scroll 25s linear infinite;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+```
+
+═══════════════════════════════════════════════════════════════
+STEP 2: UPDATE CAFE TWENTY TWENTY HEADING COLOR
+═══════════════════════════════════════════════════════════════
+
+Find the cafe title/heading CSS and update:
+
+OLD:
+```css
+.cafe-title {
+  color: #333;
+  /* or #1a1a1a or #2a2a2a */
+}
+```
+
+NEW:
+```css
+.cafe-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4A3324;
+  /* Dark brown/chocolate */
+  text-shadow: 
+    2px 2px 4px rgba(255, 255, 255, 0.3),
+    0 0 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  font-family: Georgia, 'Times New Roman', serif;
+  position: relative;
+  z-index: 3;
+}
+```
+
+═══════════════════════════════════════════════════════════════
+STEP 3: ADD TAGLINE BELOW HEADING
+═══════════════════════════════════════════════════════════════
+
+HTML/JSX - Add tagline element:
+
+Find your heading section:
+```jsx
+<div className="header-section">
+  <h1 className="cafe-title">Cafe Twenty Twenty</h1>
+  
+  {/* ADD THIS NEW TAGLINE */}
+  <p className="cafe-tagline">Roasted Rich. Served Rustic.</p>
+</div>
+```
+
+CSS for tagline:
+```css
+.cafe-tagline {
+  text-align: center;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #F7F3EE;
+  /* Off-white for contrast */
+  text-shadow: 
+    1px 1px 3px rgba(0, 0, 0, 0.5),
+    0 0 8px rgba(0, 0, 0, 0.3);
+  margin-top: -5px;
+  margin-bottom: 25px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 3;
+}
+
+/* Alternative with white color */
+.cafe-tagline.white {
+  color: #ffffff;
+}
+```
+
+═══════════════════════════════════════════════════════════════
+COMPLETE HEADER SECTION CODE
+═══════════════════════════════════════════════════════════════
+
+FULL JSX/HTML:
+```jsx
+function BookingForm() {
+  return (
+    <>
+      <BackgroundCarousel />
+      
+      <div className="page-wrapper">
+        {/* Delivery Banner */}
+        <div className="delivery-banner">
+          🚚 DELIVERY COMING SOON! 🚚 DELIVERY COMING SOON! 🚚 DELIVERY COMING SOON! 🚚 DELIVERY COMING SOON!
+        </div>
+        
+        {/* Logo and Tagline Section */}
+        <div className="logo-section">
+          <h1 className="cafe-title">Cafe Twenty Twenty</h1>
+          <p className="cafe-tagline">Roasted Rich. Served Rustic.</p>
+          
+          {/* Optional: View Menu Button */}
+          <button className="view-menu-btn">View Menu</button>
+        </div>
+        
+        {/* Booking Form */}
+        <div className="form-container">
+          {/* Your form content */}
+        </div>
+      </div>
+    </>
+  );
+}
+```
+
+FULL CSS:
+```css
+/* Delivery Banner - Terracotta Background */
+.delivery-banner {
+  background: #C46A3A;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+}
+
+/* Optional: Scrolling Animation */
+.delivery-banner {
+  animation: scroll 25s linear infinite;
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Logo Section Container */
+.logo-section {
+  text-align: center;
+  padding: 40px 20px 30px;
+  position: relative;
+  z-index: 3;
+}
+
+/* Main Heading - Dark Brown */
+.cafe-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #4A3324;
+  text-shadow: 
+    2px 2px 4px rgba(255, 255, 255, 0.4),
+    0 0 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 8px;
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.2;
+}
+
+/* Tagline - Off-white/White */
+.cafe-tagline {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #F7F3EE;
+  /* Or use: white */
+  text-shadow: 
+    1px 1px 3px rgba(0, 0, 0, 0.6),
+    0 0 8px rgba(0, 0, 0, 0.4);
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  letter-spacing: 0.8px;
+}
+
+/* Optional: View Menu Button */
+.view-menu-btn {
+  background: #A0522D;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 35px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+.view-menu-btn:hover {
+  background: #8B4513;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .cafe-title {
+    font-size: 2rem;
+  }
+  
+  .cafe-tagline {
+    font-size: 1rem;
+  }
+  
+  .delivery-banner {
+    font-size: 12px;
+  }
+}
+```
+
+═══════════════════════════════════════════════════════════════
+COLOR VARIABLES (OPTIONAL - FOR BETTER ORGANIZATION)
+═══════════════════════════════════════════════════════════════
+
+If you want to use CSS variables:
+```css
+:root {
+  /* Terracotta Colors */
+  --terracotta: #C46A3A;
+  --terracotta-dark: #A8572E;
+  
+  /* Text Colors */
+  --text-dark: #4A3324;
+  --off-white: #F7F3EE;
+  
+  /* Other Browns */
+  --rust-brown: #A0522D;
+  --saddle-brown: #8B4513;
+}
+
+/* Then use them like: */
+.delivery-banner {
+  background: var(--terracotta);
+}
+
+.cafe-title {
+  color: var(--text-dark);
+}
+
+.cafe-tagline {
+  color: var(--off-white);
+}
+```
+
+═══════════════════════════════════════════════════════════════
+WHAT CHANGED
+═══════════════════════════════════════════════════════════════
+
+BEFORE:
+❌ Delivery banner: transparent or orange
+❌ Heading: black or dark gray (#333)
+❌ No tagline below heading
+
+AFTER:
+✅ Delivery banner: terracotta (#C46A3A)
+✅ Heading: dark brown (#4A3324)
+✅ Tagline added: "Roasted Rich. Served Rustic."
+✅ Tagline color: off-white (#F7F3EE) for visibility
+
+═══════════════════════════════════════════════════════════════
+TAGLINE STYLING OPTIONS
+═══════════════════════════════════════════════════════════════
+
+Choose one style:
+
+OPTION 1 - Italic Serif (Recommended):
+```css
+.cafe-tagline {
+  font-style: italic;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: #F7F3EE;
+}
+```
+
+OPTION 2 - Regular Sans-serif:
+```css
+.cafe-tagline {
+  font-style: normal;
+  font-family: 'Helvetica', Arial, sans-serif;
+  color: white;
+  font-weight: 300;
+}
+```
+
+OPTION 3 - Bold Statement:
+```css
+.cafe-tagline {
+  font-style: normal;
+  font-weight: 600;
+  color: white;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+```
+
+═══════════════════════════════════════════════════════════════
+TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════
+
+After implementation:
+- [ ] Delivery banner is terracotta (#C46A3A)
+- [ ] Banner text is white and readable
+- [ ] "Cafe Twenty Twenty" is dark brown (#4A3324)
+- [ ] Heading is visible on all backgrounds
+- [ ] Tagline appears below heading
+- [ ] Tagline is off-white/white color
+- [ ] Tagline is readable and elegant
+- [ ] Tagline has proper shadow for visibility
+- [ ] Mobile responsive (text scales properly)
+- [ ] All other functionality works
+
+═══════════════════════════════════════════════════════════════
+IMPORTANT NOTES
+═══════════════════════════════════════════════════════════════
+
+✅ Banner background: #C46A3A (terracotta)
+✅ Heading color: #4A3324 (dark brown)
+✅ Tagline color: #F7F3EE (off-white) or white
+✅ Add text-shadow for visibility on backgrounds
+✅ Keep tagline subtle and classy
+✅ Use serif font (Georgia) for elegance
+✅ Test on different background images
+✅ Ensure text is always readable
+✅ Keep all functionality working
+
+IMPLEMENT THESE STYLING CHANGES NOW.
