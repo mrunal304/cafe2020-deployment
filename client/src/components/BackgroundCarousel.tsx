@@ -1,32 +1,49 @@
 import { useEffect, useState } from "react";
 import "./BackgroundCarousel.css";
 
-import bg1 from "../assets/bg1.jpg";
-import bg2 from "../assets/bg2.jpg";
-import bg3 from "../assets/bg3.jpg";
-import bg4 from "../assets/bg4.jpg";
-import bg5 from "../assets/bg5.jpg";
+// Import main cafe interior image
+import cafeMain from "../assets/CAFE.jpeg";
 
-const images = [bg1, bg2, bg3, bg4, bg5];
+// Import food images
+import image1 from "../assets/image1.jpeg";
+import image2 from "../assets/image2.jpeg";
+import image3 from "../assets/image3.jpeg";
+import image5 from "../assets/image5.jpeg";
+import image6 from "../assets/image6.jpeg";
+
+// Images with custom duration for each
+const imageConfig = [
+  { src: cafeMain, duration: 6000 },  // Cafe interior - 6 seconds
+  { src: image6, duration: 3000 },    // Coffee beans - 3 seconds
+  { src: image2, duration: 3000 },    // Burger - 3 seconds
+  { src: image1, duration: 3000 },    // Pasta - 3 seconds
+  { src: image3, duration: 3000 },    // Dessert - 3 seconds
+  { src: image5, duration: 3000 }     // Matcha - 3 seconds
+];
 
 export default function BackgroundCarousel() {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
-    }, 3000); // Change every 3 seconds
+    // Get duration for current image
+    const currentDuration = imageConfig[current].duration;
+    
+    // Set timeout for current image
+    const timer = setTimeout(() => {
+      setCurrent((prev) => (prev + 1) % imageConfig.length);
+    }, currentDuration);
 
-    return () => clearInterval(interval);
-  }, []);
+    // Cleanup
+    return () => clearTimeout(timer);
+  }, [current]);
 
   return (
     <div className="bg-carousel">
-      {images.map((img, index) => (
+      {imageConfig.map((config, index) => (
         <div
           key={index}
           className={`bg-slide ${index === current ? "active" : ""}`}
-          style={{ backgroundImage: `url(${img})` }}
+          style={{ backgroundImage: `url(${config.src})` }}
         />
       ))}
     </div>
