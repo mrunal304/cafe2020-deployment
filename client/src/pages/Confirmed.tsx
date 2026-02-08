@@ -22,7 +22,7 @@ export default function Confirmed() {
   return (
     <CustomerLayout>
       <div className="text-center py-8 space-y-6">
-        <div className="bg-[var(--olive)] w-20 h-20 rounded-full flex items-center justify-center mx-auto text-white shadow-lg shadow-[var(--olive)]/30">
+        <div className="bg-[#4CAF50] w-20 h-20 rounded-full flex items-center justify-center mx-auto text-white shadow-lg shadow-[#4CAF50]/30">
           <CheckCircle className="w-10 h-10" />
         </div>
 

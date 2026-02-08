@@ -147,7 +147,7 @@ export default function QueueStatus() {
               variant="outline" 
               onClick={handleLeaveQueue}
               disabled={isLeaving}
-              className="bg-[var(--off-white)]/90 text-[var(--text-dark)] border-[var(--input-border)] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#C46A3A] hover:border-[#C46A3A] hover:text-white transition-all duration-300 uppercase tracking-wide text-xs"
+              className="bg-[#C46A3A] text-white border-[#C46A3A] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#C46A3A] hover:border-[#C46A3A] hover:text-white transition-none uppercase tracking-wide text-xs active:opacity-90"
             >
               {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
             </Button>
