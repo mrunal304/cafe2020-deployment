@@ -15,7 +15,7 @@ export default function Expired() {
 
   return (
     <CustomerLayout>
-      <div className="flex flex-col items-center justify-center p-8 bg-white rounded-3xl max-w-md mx-auto text-center space-y-6">
+      <div className="flex flex-col items-center justify-center p-8 bg-[var(--off-white)] rounded-3xl max-w-md mx-auto text-center space-y-6">
         
         {/* Error Icon - Red circle with exclamation */}
         <motion.div 
@@ -23,15 +23,15 @@ export default function Expired() {
           animate={{ scale: 1, opacity: 1 }}
           className="relative mb-2"
         >
-          <div className="bg-red-100 rounded-full w-32 h-32 flex items-center justify-center">
-            <div className="bg-white rounded-full w-20 h-20 flex items-center justify-center border-4 border-red-500 shadow-sm">
-              <span className="text-red-500 text-4xl font-bold">!</span>
+          <div className="bg-destructive/10 rounded-full w-32 h-32 flex items-center justify-center">
+            <div className="bg-[var(--off-white)] rounded-full w-20 h-20 flex items-center justify-center border-4 border-destructive shadow-sm">
+              <span className="text-destructive text-4xl font-bold">!</span>
             </div>
           </div>
         </motion.div>
         
         {/* Heading */}
-        <h1 className="text-3xl font-black font-display text-stone-900">
+        <h1 className="text-3xl font-black font-display text-[var(--text-dark)]">
           Booking Expired
         </h1>
         
@@ -39,19 +39,19 @@ export default function Expired() {
         <div className="space-y-2">
           {isTimerExpired ? (
             <>
-              <p className="text-stone-500 text-base leading-relaxed">
+              <p className="text-[var(--text-muted)] text-base leading-relaxed">
                 Your 10-minute response time has expired.
               </p>
-              <p className="text-stone-500 text-base leading-relaxed">
+              <p className="text-[var(--text-muted)] text-base leading-relaxed">
                 Please join the queue again to get a new spot.
               </p>
             </>
           ) : isCancelledByCustomer ? (
-            <p className="text-stone-500 text-base leading-relaxed">
+            <p className="text-[var(--text-muted)] text-base leading-relaxed">
               Sorry, this booking has either expired or was cancelled.
             </p>
           ) : (
-            <p className="text-stone-500 text-base leading-relaxed">
+            <p className="text-[var(--text-muted)] text-base leading-relaxed">
               This booking was cancelled by the restaurant. Please join the queue again if you'd like to visit.
             </p>
           )}
@@ -60,7 +60,7 @@ export default function Expired() {
         {/* Join Queue Again Button */}
         <Button 
           onClick={() => setLocation('/')} 
-          className="w-full h-14 bg-stone-900 text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-stone-800 transition-all active:scale-[0.98]"
+          className="w-full h-14 bg-[var(--text-dark)] text-white rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-[var(--brown-dark)] transition-all active:scale-[0.98]"
         >
           <span>←</span>
           <span>Join Queue Again</span>

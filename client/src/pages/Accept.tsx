@@ -94,23 +94,23 @@ export default function Accept() {
   return (
     <CustomerLayout>
       <div className="relative z-10 w-full">
-        <div className="bg-[#c8c8c8f2] p-6 rounded-2xl shadow-xl border border-white/20 w-full text-center space-y-6 max-w-sm mx-auto">
+        <div className="bg-[var(--beige)]/95 p-6 rounded-2xl shadow-xl border border-white/20 w-full text-center space-y-6 max-w-sm mx-auto">
           <motion.div
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
           >
-            <div className="bg-green-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-green-200">
-              <PartyPopper className="w-12 h-12 text-green-600" />
+            <div className="bg-[var(--olive)]/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-2 border-4 border-[var(--olive)]/20">
+              <PartyPopper className="w-12 h-12 text-[var(--olive)]" />
             </div>
           </motion.div>
 
           <div>
-            <h1 className="text-2xl font-black font-display text-stone-800 mb-1">Your Table is Ready!</h1>
-            <p className="text-stone-600 text-base">We have a spot open for your party of {queue.numberOfPeople}.</p>
+            <h1 className="text-2xl font-black font-display text-[var(--text-dark)] mb-1">Your Table is Ready!</h1>
+            <p className="text-[var(--text-muted)] text-base">We have a spot open for your party of {queue.numberOfPeople}.</p>
           </div>
 
-          <div className="bg-white/80 p-4 rounded-2xl border border-stone-200 shadow-inner">
-            <p className="text-[10px] uppercase tracking-widest font-bold text-stone-400 mb-1">Please respond in</p>
+          <div className="bg-[var(--off-white)]/80 p-4 rounded-2xl border border-[var(--input-border)] shadow-inner">
+            <p className="text-[10px] uppercase tracking-widest font-bold text-[var(--text-muted)]/50 mb-1">Please respond in</p>
             <div className={`text-4xl font-mono font-bold ${timerColor} tabular-nums`}>
               {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
             </div>
@@ -118,15 +118,15 @@ export default function Accept() {
 
           <div className="space-y-3 text-left">
             <div className="flex justify-between items-end">
-              <label className="text-xs font-bold text-stone-500 uppercase tracking-wider">Message (Optional)</label>
-              <span className="text-[10px] text-stone-400">{message.length}/500</span>
+              <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Message (Optional)</label>
+              <span className="text-[10px] text-[var(--text-muted)]/50">{message.length}/500</span>
             </div>
             <div className="relative group">
               <Textarea
                 placeholder="Running late? Let us know..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value.slice(0, 500))}
-                className="resize-none min-h-[80px] rounded-xl border-stone-200 focus:border-green-300 focus:ring-green-100 transition-all text-sm bg-white/90"
+                className="resize-none min-h-[80px] rounded-xl border-[var(--input-border)] focus:border-[var(--olive)]/30 focus:ring-[var(--olive)]/10 transition-all text-sm bg-[var(--off-white)]/90"
               />
               <AnimatePresence>
                 {messageSent && (
@@ -134,7 +134,7 @@ export default function Accept() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="absolute bottom-2 right-2 bg-green-500 text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 shadow-sm"
+                    className="absolute bottom-2 right-2 bg-[var(--olive)] text-white text-[10px] px-2 py-1 rounded-full flex items-center gap-1 shadow-sm"
                   >
                     <Check className="w-3 h-3" />
                     Message sent
@@ -148,7 +148,7 @@ export default function Accept() {
                 <button
                   key={msg}
                   onClick={() => setMessage(msg)}
-                  className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-white/90 text-stone-500 hover:bg-green-50 hover:text-green-600 border border-stone-200 hover:border-green-200 transition-colors"
+                  className="text-[10px] font-bold px-3 py-1.5 rounded-full bg-[var(--off-white)]/90 text-[var(--text-muted)] hover:bg-[var(--olive)]/10 hover:text-[var(--olive)] border border-[var(--input-border)] hover:border-[var(--olive)]/20 transition-colors"
                 >
                   {msg}
                 </button>
@@ -159,7 +159,7 @@ export default function Accept() {
               variant="outline" 
               size="sm" 
               onClick={handleSendMessage}
-              className="w-full h-8 text-xs font-bold rounded-lg border-stone-200 text-stone-500 hover:text-green-600 hover:bg-green-50 bg-white/90"
+              className="w-full h-8 text-xs font-bold rounded-lg border-[var(--input-border)] text-[var(--text-muted)] hover:text-[var(--olive)] hover:bg-[var(--olive)]/10 bg-[var(--off-white)]/90"
             >
               Send Message Only
             </Button>
@@ -169,7 +169,7 @@ export default function Accept() {
             <Button
               onClick={handleAccept}
               disabled={isAccepting || isCancelling}
-              className="w-full h-14 text-lg font-bold rounded-xl bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20 hover:scale-[1.02] transition-transform"
+              className="w-full h-14 text-lg font-bold rounded-xl bg-[var(--olive)] hover:bg-[var(--olive)]/90 text-white shadow-lg shadow-[var(--olive)]/20 hover:scale-[1.02] transition-transform"
             >
               {isAccepting ? <Loader2 className="animate-spin" /> : "I'm Coming!"}
             </Button>
@@ -178,7 +178,7 @@ export default function Accept() {
               variant="ghost"
               onClick={() => setShowCancelConfirm(true)}
               disabled={isAccepting || isCancelling}
-              className="w-full h-10 font-semibold text-stone-500 hover:text-red-500 hover:bg-red-50"
+              className="w-full h-10 font-semibold text-[var(--text-muted)] hover:text-destructive hover:bg-destructive/10"
             >
               <Ban className="w-4 h-4 mr-2" />
               Cancel Booking

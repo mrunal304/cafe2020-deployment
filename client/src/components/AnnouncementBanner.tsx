@@ -5,7 +5,7 @@ export function AnnouncementBanner() {
   const repeatedText = Array(10).fill(text).join(" \u00A0\u00A0\u00A0\u00A0\u00A0 ");
 
   return (
-    <div className="fixed top-0 left-0 w-full h-[30px] md:h-[40px] bg-[#FF6B35] text-white overflow-hidden z-[100] flex items-center shadow-md">
+    <div className="fixed top-0 left-0 w-full h-[30px] md:h-[40px] bg-[var(--terracotta)] text-white overflow-hidden z-[100] flex items-center shadow-md">
       <div className="whitespace-nowrap flex animate-scroll-banner">
         <span className="text-xs md:text-sm font-bold uppercase tracking-wide px-4">
           {repeatedText}
