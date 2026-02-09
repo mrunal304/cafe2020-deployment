@@ -1,6 +1,18 @@
 import { ReactNode } from "react";
 import cafeLogo from "../assets/cafe-logo.png";
+import { useState, useEffect } from "react";
+
 export function CustomerLayout({ children }: { children: ReactNode }) {
+  const [showLogo, setShowLogo] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [showTagline, setShowTagline] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => setShowLogo(true), 100);
+    setTimeout(() => setShowTitle(true), 500);
+    setTimeout(() => setShowTagline(true), 900);
+  }, []);
+
   const logoUrl = cafeLogo;
   return (
     <div className="min-h-screen relative overflow-x-hidden flex flex-col items-center justify-center p-4 bg-transparent">
@@ -10,18 +22,24 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
       <div className="w-full max-w-md z-10 h-full flex flex-col py-8 overflow-hidden">
         {/* Logo Header */}
         <div className="flex flex-col items-center mb-6 flex-shrink-0">
-          <div className="w-fit transition-transform duration-300 p-2 rounded-xl bg-[var(--off-white)]/90 shadow-sm flex items-center justify-center">
+          <div className={`w-fit transition-all duration-1000 ease-out p-2 rounded-xl bg-transparent flex items-center justify-center ${showLogo ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 -translate-y-8 scale-90'}`}>
             <img 
               src={logoUrl} 
               alt="Cafe Twenty Twenty" 
-              className="w-32 h-auto object-contain"
+              className="w-56 h-56 object-contain"
             />
           </div>
           <div className="mt-4 px-3 py-1 rounded-xl bg-transparent text-center">
-            <h1 className="text-4xl font-bold text-[#4A3324] leading-tight drop-shadow-sm" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <h1 
+              className={`text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm transition-all duration-1000 ease-out ${showTitle ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               Cafe Twenty Twenty
             </h1>
-            <p className="text-[#F7F3EE] text-lg font-normal italic mt-1 tracking-wider drop-shadow-md" style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}>
+            <p 
+              className={`text-white/90 text-xl md:text-2xl font-normal italic mt-1 tracking-wider drop-shadow-md transition-all duration-1000 ease-out ${showTagline ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
               Roasted Rich. Served Rustic.
             </p>
           </div>

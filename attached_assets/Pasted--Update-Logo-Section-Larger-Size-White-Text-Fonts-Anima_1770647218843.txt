@@ -1,0 +1,254 @@
+# Update Logo Section - Larger Size, White Text, Fonts & Animations
+
+## Image to Upload in Replit
+
+**Upload this file:** `Adobe_Express_-_file.png` (the white circular logo)
+**Save it to:** `client/src/assets/cafe-logo.png`
+
+---
+
+## Changes Required
+
+### 1. Make Logo Larger
+- Current: Small size
+- New: Increase to `w-48 h-48` or `w-56 h-56` (larger, more prominent)
+
+### 2. Text Colors - White/Cream Shade
+- "Cafe Twenty Twenty" → White (`text-white`)
+- "Roasted Rich. Served Rustic." → White/Light cream (`text-white/90`)
+
+### 3. Font Styles (Reference: Image 2)
+- "Cafe Twenty Twenty" → Elegant serif font
+- "Roasted Rich. Served Rustic." → Elegant italic serif font
+
+### 4. Add Entrance Animations
+- Logo → Fade in from top with scale effect
+- Title → Fade in after logo
+- Tagline → Fade in last
+- Smooth, elegant animations
+
+---
+
+## Complete Code Implementation
+
+### Step 1: Add Google Fonts (in `public/index.html`)
+
+Add this in the `<head>` section:
+```html
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+```
+
+### Step 2: Update Home Page Component
+
+Find `client/src/pages/Home.tsx` (or wherever logo is displayed):
+
+```jsx
+import { useEffect, useState } from 'react';
+import cafeLogo from '../assets/cafe-logo.png';
+
+export default function Home() {
+  // Animation states
+  const [showLogo, setShowLogo] = useState(false);
+  const [showTitle, setShowTitle] = useState(false);
+  const [showTagline, setShowTagline] = useState(false);
+
+  // Trigger animations on mount
+  useEffect(() => {
+    setTimeout(() => setShowLogo(true), 100);
+    setTimeout(() => setShowTitle(true), 500);
+    setTimeout(() => setShowTagline(true), 900);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#F5EDE4] via-[#E8DDD0] to-[#DED0BF]">
+      
+      {/* Logo Section with Animations */}
+      <div className="flex flex-col items-center justify-center pt-12 pb-8 px-6">
+        
+        {/* Logo - Larger with Fade & Scale Animation */}
+        <img 
+          src={cafeLogo}
+          alt="Cafe Twenty Twenty"
+          className={`
+            w-56 h-56 object-contain mb-6
+            transition-all duration-1000 ease-out
+            ${showLogo 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 -translate-y-8 scale-90'
+            }
+          `}
+        />
+        
+        {/* Cafe Name - White, Serif Font, Fade In */}
+        <h1 
+          className={`
+            text-5xl md:text-6xl font-bold text-white text-center mb-3
+            transition-all duration-1000 ease-out
+            ${showTitle 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-4'
+            }
+          `}
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Cafe Twenty Twenty
+        </h1>
+        
+        {/* Tagline - White, Italic Serif, Fade In */}
+        <p 
+          className={`
+            text-xl md:text-2xl text-white/90 text-center italic font-light
+            transition-all duration-1000 ease-out
+            ${showTagline 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-4'
+            }
+          `}
+          style={{ fontFamily: "'Playfair Display', serif" }}
+        >
+          Roasted Rich. Served Rustic.
+        </p>
+        
+      </div>
+      
+      {/* Join the Queue Form - Keep as is */}
+      <div className="max-w-md mx-auto p-6 bg-white/70 rounded-3xl backdrop-blur-sm">
+        <h2 className="text-2xl font-bold text-stone-900 mb-2">
+          Join the Queue
+        </h2>
+        <p className="text-stone-600 text-sm mb-6">
+          Get in line from anywhere. We'll text you when your table is ready.
+        </p>
+        
+        {/* ... rest of the form stays exactly the same ... */}
+      </div>
+      
+    </div>
+  );
+}
+```
+
+---
+
+## Animation Details
+
+### Logo Animation
+```jsx
+className={`
+  w-56 h-56 object-contain mb-6
+  transition-all duration-1000 ease-out
+  ${showLogo 
+    ? 'opacity-100 translate-y-0 scale-100'    // Final state: visible, in place, normal size
+    : 'opacity-0 -translate-y-8 scale-90'      // Initial state: invisible, above, slightly smaller
+  }
+`}
+```
+
+### Title Animation
+```jsx
+className={`
+  text-5xl font-bold text-white
+  transition-all duration-1000 ease-out
+  ${showTitle 
+    ? 'opacity-100 translate-y-0'   // Final: visible, in place
+    : 'opacity-0 translate-y-4'     // Initial: invisible, slightly below
+  }
+`}
+```
+
+### Tagline Animation
+```jsx
+className={`
+  text-xl text-white/90 italic
+  transition-all duration-1000 ease-out
+  ${showTagline 
+    ? 'opacity-100 translate-y-0'   // Final: visible, in place
+    : 'opacity-0 translate-y-4'     // Initial: invisible, slightly below
+  }
+`}
+```
+
+---
+
+## Font Styling
+
+### Cafe Twenty Twenty
+- Font: Playfair Display (serif, elegant)
+- Weight: Bold (700)
+- Size: `text-5xl` (3rem) on mobile, `text-6xl` (3.75rem) on desktop
+- Color: White
+
+### Roasted Rich. Served Rustic.
+- Font: Playfair Display Italic
+- Weight: Light (400)
+- Size: `text-xl` (1.25rem) on mobile, `text-2xl` (1.5rem) on desktop
+- Color: White with 90% opacity (`text-white/90`)
+
+---
+
+## Logo Sizing Options
+
+Choose based on design preference:
+
+```jsx
+// Medium-Large (Recommended)
+className="w-48 h-48 object-contain"  // 192px
+
+// Large 
+className="w-56 h-56 object-contain"  // 224px (used in code above)
+
+// Extra Large
+className="w-64 h-64 object-contain"  // 256px
+```
+
+---
+
+## Timing Sequence
+
+```javascript
+useEffect(() => {
+  setTimeout(() => setShowLogo(true), 100);    // Logo appears first at 0.1s
+  setTimeout(() => setShowTitle(true), 500);   // Title appears at 0.5s
+  setTimeout(() => setShowTagline(true), 900); // Tagline appears at 0.9s
+}, []);
+```
+
+**Total animation time:** ~1.9 seconds for complete entrance
+
+---
+
+## Keep Everything Else Unchanged
+
+✅ **DO NOT CHANGE:**
+- Form fields (Name, Mobile, Party Size)
+- Proceed button
+- Form functionality
+- Queue system
+- Admin panel
+- All other pages
+- Background colors
+- Any other features
+
+⚠️ **ONLY CHANGE:**
+- Logo size (larger)
+- Text colors (white)
+- Font styles (Playfair Display serif)
+- Add entrance animations
+- Logo section layout
+
+---
+
+## Summary
+
+**Upload:** `Adobe_Express_-_file.png` → Save as `client/src/assets/cafe-logo.png`
+
+**Changes:**
+1. ✅ Logo larger: `w-56 h-56`
+2. ✅ Text white: `text-white` and `text-white/90`
+3. ✅ Fonts: Playfair Display serif (elegant, matches Image 2)
+4. ✅ Animations: Fade in + slide up effect
+5. ✅ Keep everything else exactly the same
+
+**Result:** Professional, elegant entrance with larger logo, white text, and smooth animations!
