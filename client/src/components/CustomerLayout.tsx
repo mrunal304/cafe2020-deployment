@@ -38,7 +38,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="flex flex-col items-center mb-0 flex-shrink-0"
+          className="flex flex-col items-center mb-8 flex-shrink-0"
         >
           {/* Logo with animations */}
           <motion.div 
@@ -46,7 +46,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             whileHover={{ scale: 1.1, filter: "drop-shadow(0 0 20px rgba(255,255,255,0.4))" }}
-            className="relative"
+            className="relative mb-6"
           >
             <img 
               src={logoUrl} 
@@ -55,7 +55,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
             />
           </motion.div>
 
-          <div className="-mt-4 sm:-mt-6 md:-mt-8 px-3 py-0 rounded-xl bg-transparent text-center flex flex-col items-center relative z-20">
+          <div className="px-3 py-0 rounded-xl bg-transparent text-center flex flex-col items-center relative z-20">
             {/* Cafe Name with animations */}
             <motion.h1 
               className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm flex animate-gradient-shift hover-shine transition-transform hover:-translate-y-1 px-4 text-center justify-center whitespace-nowrap"
@@ -93,7 +93,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
 
             {/* Tagline with animations */}
             <motion.p 
-              className="text-white/90 text-xl md:text-2xl font-normal italic mt-0 tracking-wider drop-shadow-md hover:italic hover:underline cursor-default transition-all"
+              className="text-white/90 text-xl md:text-2xl font-normal italic mt-2 tracking-wider drop-shadow-md hover:italic hover:underline cursor-default transition-all"
               style={{ fontFamily: "'Playfair Display', serif" }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

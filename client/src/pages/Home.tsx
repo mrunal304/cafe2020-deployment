@@ -60,8 +60,8 @@ export default function Home() {
 
   return (
     <CustomerLayout>
-      <div className="relative z-10">
-        <div className="text-center mb-6">
+      <div className="relative z-10 pt-4">
+        <div className="text-center mb-8">
           <h2 className="text-2xl font-bold font-display text-[var(--text-dark)]">Join the Queue</h2>
           <p className="text-[var(--text-muted)] mt-2">Get in line from anywhere. We'll text you when your table is ready.</p>
         </div>
