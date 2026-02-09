@@ -32,7 +32,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-[var(--beige)]/50 to-transparent pointer-events-none" />
       
-      <div className="w-full max-w-[95vw] sm:max-w-lg z-10 h-full flex flex-col py-4 overflow-hidden">
+      <div className="w-full max-w-[100vw] sm:max-w-xl z-10 h-full flex flex-col py-4 overflow-visible px-2">
         {/* Logo Header */}
         <motion.div 
           initial="hidden"
@@ -61,7 +61,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
           <div className="mt-0 px-3 py-0 rounded-xl bg-transparent text-center flex flex-col items-center">
             {/* Cafe Name with animations */}
             <motion.h1 
-              className="text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm flex animate-gradient-shift hover-shine transition-transform hover:-translate-y-1 px-4 text-center justify-center flex-wrap"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-white leading-tight drop-shadow-sm flex animate-gradient-shift hover-shine transition-transform hover:-translate-y-1 px-4 text-center justify-center whitespace-nowrap"
               style={{ fontFamily: "'Playfair Display', serif" }}
               initial="hidden"
               animate="visible"
