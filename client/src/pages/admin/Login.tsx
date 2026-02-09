@@ -1,4 +1,4 @@
-import cafeLogo from "@/assets/cafe-logo.png";
+import cafeLogo from "@/assets/cafe-logo-dark.png";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
