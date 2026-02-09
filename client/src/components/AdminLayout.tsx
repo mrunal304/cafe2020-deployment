@@ -41,7 +41,8 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     "--sidebar-accent-foreground": "0 0% 100%",
     "--sidebar-border": "0 0% 100% / 0.2",
     "--sidebar-ring": "22 39% 39%",
-    "--sidebar-width": "18rem",
+    "--sidebar-width": "14rem", // ~224px
+    "--sidebar-width-icon": "3rem",
   };
 
   const menuItems = [
@@ -61,14 +62,14 @@ export function AdminLayout({ children }: { children: ReactNode }) {
     <SidebarProvider style={style as React.CSSProperties}>
       <div className="flex h-svh w-full overflow-hidden bg-[#FDF8F3]">
         <Sidebar className="border-none bg-[#8B5A3C]">
-          <SidebarHeader className="p-8 pb-4">
-            <div className="flex flex-col items-center mb-4">
+          <SidebarHeader className="p-4 pb-2">
+            <div className="flex flex-col items-center mb-2">
               <img 
                 src={cafeLogo}
                 alt="Cafe Twenty Twenty"
-                className="w-24 h-24 object-contain mb-2"
+                className="w-20 h-20 object-contain mb-2"
               />
-              <h2 className="font-serif text-2xl font-normal text-white italic tracking-tight text-center leading-tight">Admin Panel</h2>
+              <h2 className="font-serif text-xl font-normal text-white italic tracking-tight text-center leading-tight">Admin Panel</h2>
             </div>
           </SidebarHeader>
           <SidebarContent className="px-4 pt-6">
@@ -121,7 +122,7 @@ export function AdminLayout({ children }: { children: ReactNode }) {
             </div>
           </SidebarFooter>
         </Sidebar>
-        <main className="flex-1 overflow-auto p-8 lg:p-16">
+        <main className="flex-1 overflow-auto p-4 lg:p-8">
           <div className="max-w-7xl mx-auto">
             {children}
           </div>
