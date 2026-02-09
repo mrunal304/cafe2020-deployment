@@ -110,7 +110,7 @@ export default function QueueStatus() {
           <div className="text-center mb-4">
             <h2 className="text-3xl font-black text-[var(--text-dark)] tracking-tight leading-none mb-2">Queued!</h2>
             <p className="text-[10px] font-bold text-[var(--text-muted)] uppercase leading-tight opacity-70">
-              Restaurant Timings: 10:30 am to 10:30 pm (Monday to Sunday)
+              Cafe Timings: 12:30 PM to 11:00 PM (Everyday)
             </p>
           </div>
 
@@ -143,14 +143,26 @@ export default function QueueStatus() {
           {/* Name & Leave Queue */}
           <div className="flex flex-col items-center pb-2">
             <p className="text-[var(--text-muted)] font-bold text-xs mb-3 uppercase">Name: {queue.name}</p>
-            <Button 
-              variant="outline" 
-              onClick={handleLeaveQueue}
-              disabled={isLeaving}
-              className="bg-[#C46A3A] text-white border-[#C46A3A] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#C46A3A] hover:border-[#C46A3A] hover:text-white transition-none uppercase tracking-wide text-xs active:opacity-90"
-            >
-              {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
-            </Button>
+            <div className="flex flex-col gap-[15px] w-full items-center">
+              <Button 
+                variant="outline" 
+                onClick={handleLeaveQueue}
+                disabled={isLeaving}
+                className="bg-[#C46A3A] text-white border-[#C46A3A] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#C46A3A] hover:border-[#C46A3A] hover:text-white transition-none uppercase tracking-wide text-xs active:opacity-90 w-full max-w-[200px]"
+              >
+                {isLeaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Leave Queue"}
+              </Button>
+              <Button
+                id="exploreMenuBtn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.open('/menu.pdf', '_blank');
+                }}
+                className="bg-[#E6D3B1] text-[#C46A3A] border-[#E6D3B1] font-black px-8 h-10 rounded-xl shadow-sm hover:bg-[#E6D3B1] hover:border-[#E6D3B1] hover:text-[#C46A3A] transition-none uppercase tracking-wide text-xs active:opacity-90 w-full max-w-[200px]"
+              >
+                Explore Our Menu
+              </Button>
+            </div>
           </div>
         </div>
       </div>
