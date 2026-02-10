@@ -109,22 +109,27 @@ export class MongoStorage implements IStorage {
   }
 
   async createQueueEntry(entry: InsertQueueEntry): Promise<QueueEntry> {
-    const getLocalDate = () => {
-      return new Date().toLocaleDateString('en-CA', { 
+    const getIndiaDate = () => {
+      const options = {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
-      });
+      };
+      const formatter = new Intl.DateTimeFormat('en-CA', options as any);
+      return formatter.format(new Date());
     };
 
     const now = new Date();
-    const localDateStr = getLocalDate();
-    const bookingDate = new Date(localDateStr);
+    const localDateStr = getIndiaDate();
+    const bookingDate = new Date(localDateStr + 'T00:00:00');
     bookingDate.setHours(0, 0, 0, 0);
 
-    console.log("Creation - Current server time:", now.toISOString());
-    console.log("Creation - Local date (IST):", localDateStr);
+    console.log("=== BOOKING CREATION DEBUG ===");
+    console.log("UTC Date:", now.toISOString());
+    console.log("India Date (IST):", new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+    console.log("Saving as bookingDate:", localDateStr);
+    console.log("============================");
 
     const totalTodayBookings = await MongoQueueEntry.countDocuments({
       bookingDate,
@@ -185,24 +190,25 @@ export class MongoStorage implements IStorage {
     dateStr?: string,
     statuses?: string[],
   ): Promise<QueueEntry[]> {
-    const getLocalDate = () => {
-      return new Date().toLocaleDateString('en-CA', { 
+    const getIndiaDate = () => {
+      const options = {
         timeZone: 'Asia/Kolkata',
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
-      });
+      };
+      return new Intl.DateTimeFormat('en-CA', options as any).format(new Date());
     };
 
     const filter: any = {};
 
     if (dateStr) {
-      const bookingDate = new Date(dateStr);
+      const bookingDate = new Date(dateStr + 'T00:00:00');
       bookingDate.setHours(0, 0, 0, 0);
       filter.bookingDate = bookingDate;
     } else {
-      const localDateStr = getLocalDate();
-      const today = new Date(localDateStr);
+      const localDateStr = getIndiaDate();
+      const today = new Date(localDateStr + 'T00:00:00');
       today.setHours(0, 0, 0, 0);
       filter.bookingDate = today;
       console.log("List - Current server time:", new Date().toISOString());

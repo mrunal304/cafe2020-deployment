@@ -1,0 +1,128 @@
+CRITICAL BUG: Date mismatch in Admin Panel - bookings created on 11th February are appearing under 10th February in both Active Queue and Recent Activity.
+
+This is a timezone issue affecting BOTH:
+1. Booking creation (when data is saved to database)
+2. Admin dashboard date filtering (when data is retrieved)
+
+FIXES NEEDED:
+
+## FIX 1: Backend - Booking Creation (Save correct date)
+
+Find the POST endpoint for creating bookings (likely in server/index.js or similar).
+
+Current problematic code probably looks like:
+```javascript
+const bookingDate = new Date().toISOString().split('T')[0]; // ❌ WRONG - uses UTC
+```
+
+Replace with India timezone (IST):
+```javascript
+// ✅ CORRECT - Use India timezone
+const getIndiaDate = () => {
+  const options = {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  };
+  const formatter = new Intl.DateTimeFormat('en-CA', options);
+  return formatter.format(new Date());
+};
+
+const bookingDate = getIndiaDate(); // Returns "2025-02-11" when it's 11th Feb in India
+
+console.log("📅 Saving booking with date:", bookingDate);
+console.log("🌏 Current IST time:", new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+```
+
+## FIX 2: Admin Dashboard - Default Date Filter
+
+In client/src/pages/AdminDashboard.jsx (around line 40-45):
+
+Current code:
+```javascript
+const [selectedDate, setSelectedDate] = useState(new Date());
+const formattedDate = format(selectedDate, "yyyy-MM-dd");
+```
+
+Replace with:
+```javascript
+// ✅ Use India timezone for default date
+const getIndiaDate = () => {
+  const options = {
+    timeZone: 'Asia/Kolkata',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  };
+  return new Intl.DateTimeFormat('en-CA', options).format(new Date());
+};
+
+const [selectedDate, setSelectedDate] = useState(() => {
+  // Initialize with India date
+  const indiaDateStr = getIndiaDate();
+  return new Date(indiaDateStr + 'T00:00:00');
+});
+
+const formattedDate = format(selectedDate, "yyyy-MM-dd");
+
+console.log("🔍 Admin Dashboard - Selected Date:", formattedDate);
+console.log("🌏 Current India Date:", getIndiaDate());
+```
+
+## FIX 3: "Today" Button in Admin Panel
+
+Find the "Today" button click handler (around line 140-145 in AdminDashboard.jsx):
+
+Replace:
+```javascript
+onClick={() => setSelectedDate(new Date())} // ❌ WRONG
+```
+
+With:
+```javascript
+onClick={() => {
+  const indiaDateStr = getIndiaDate();
+  setSelectedDate(new Date(indiaDateStr + 'T00:00:00'));
+}} // ✅ CORRECT
+```
+
+## FIX 4: Recent Activity Page (if separate file)
+
+If Recent Activity is in a separate file (like client/src/pages/RecentActivity.jsx), apply the same fix:
+- Use India timezone for default date
+- Update "Today" button logic
+- Add debug console logs
+
+## VERIFICATION:
+
+After fixing, add these debug logs to verify:
+
+In booking creation endpoint:
+```javascript
+console.log("=== BOOKING CREATION DEBUG ===");
+console.log("UTC Date:", new Date().toISOString());
+console.log("India Date (IST):", new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }));
+console.log("Saving as:", bookingDate);
+console.log("============================");
+```
+
+In Admin Dashboard:
+```javascript
+console.log("=== ADMIN DASHBOARD DEBUG ===");
+console.log("Browser Local Date:", new Date().toLocaleDateString());
+console.log("Selected Filter Date:", formattedDate);
+console.log("India Current Date:", getIndiaDate());
+console.log("============================");
+```
+
+## TESTING:
+
+1. Create a new booking on 11th February
+2. Check database: `echo "SELECT id, name, bookingDate, createdAt FROM Booking ORDER BY id DESC LIMIT 1;" | sqlite3 db.sqlite`
+3. Expected: bookingDate should be "2025-02-11"
+4. Open Admin Dashboard - should default to 11th Feb
+5. Click "Today" button - should show 11th Feb bookings
+6. Recent Activity - should show today's completed/cancelled bookings
+
+The goal: All dates should use Asia/Kolkata timezone consistently across the entire application so bookings appear under the correct date.
