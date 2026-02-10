@@ -82,7 +82,7 @@ export default function AdminActivity() {
 
   const historyList = queue?.filter(entry => 
     entry.name.toLowerCase().includes(searchTerm.toLowerCase())
-  ).sort((a, b) => new Date(b.updatedAt!).getTime() - new Date(a.updatedAt!).getTime()) || [];
+  ).sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime()) || [];
 
   const activityContent = (
     <div className="space-y-8">
