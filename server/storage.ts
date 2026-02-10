@@ -27,6 +27,7 @@ export interface IStorage {
   getQueueEntries(date?: string): Promise<QueueEntry[]>;
   updateQueueStatus(id: string, status: string): Promise<QueueEntry>;
   updateQueueEntry(id: string, updates: Partial<QueueEntry>): Promise<QueueEntry>;
+  recalculateActiveQueuePositions(bookingDate: Date): Promise<number>;
   reorderQueue(removedPosition: number): Promise<void>;
   
   // Expiry check
@@ -220,29 +221,39 @@ export class MongoStorage implements IStorage {
       { new: true }
     );
     if (!updated) throw new Error("Entry not found");
+    
+    // If status changed to a terminal state, recalculate positions
+    const isTerminal = (s: string) => ['completed', 'cancelled', 'expired', 'left'].includes(s);
+    if (updates.status && isTerminal(updates.status)) {
+      await this.recalculateActiveQueuePositions(updated.bookingDate);
+    }
+    
     return this.mapQueueEntry(updated);
   }
 
-  async reorderQueue(removedPosition: number): Promise<void> {
-    console.log('=== Reordering Queue ===');
-    console.log('Removed position:', removedPosition);
-    
-    try {
-      const entriesToUpdate = await MongoQueueEntry.find({
-        status: 'waiting',
-        position: { $gt: removedPosition }
-      }).sort({ position: 1 });
-      
-      for (const entry of entriesToUpdate) {
-        if (entry.position) {
-          entry.position = entry.position - 1;
-          await entry.save();
-          console.log(`Updated ${entry.name}: Position moved to ${entry.position}`);
+  async recalculateActiveQueuePositions(bookingDate: Date): Promise<number> {
+    const activeBookings = await MongoQueueEntry.find({
+      bookingDate,
+      status: { $in: ["waiting", "called", "confirmed"] }
+    }).sort({ dailySerialNumber: 1 });
+
+    for (let i = 0; i < activeBookings.length; i++) {
+      await MongoQueueEntry.updateOne(
+        { _id: activeBookings[i]._id },
+        { 
+          activeQueuePosition: i + 1,
+          position: i + 1,
+          updatedAt: new Date()
         }
-      }
-    } catch (error) {
-      console.error('Error reordering queue:', error);
+      );
     }
+    return activeBookings.length;
+  }
+
+  async reorderQueue(removedPosition: number): Promise<void> {
+    // This is now redundant as we use recalculateActiveQueuePositions
+    // but we'll keep it for compatibility if called elsewhere
+    return;
   }
 
   async getExpiredEntries(threshold: Date): Promise<QueueEntry[]> {
