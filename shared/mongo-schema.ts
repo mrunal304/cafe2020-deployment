@@ -22,7 +22,8 @@ export interface IQueueEntry extends Document {
   name: string;
   phoneNumber: string;
   numberOfPeople: number;
-  dailyQueueNumber: number;
+  dailySerialNumber: number;
+  activeQueuePosition: number;
   bookingDate: Date;
   bookingDateTime: Date;
   status: 'waiting' | 'called' | 'confirmed' | 'expired' | 'cancelled' | 'completed' | 'left';
@@ -43,7 +44,8 @@ const QueueEntrySchema: Schema = new Schema({
   name: { type: String, default: "Guest" },
   phoneNumber: { type: String, required: true },
   numberOfPeople: { type: Number, required: true },
-  dailyQueueNumber: { type: Number, required: true },
+  dailySerialNumber: { type: Number, required: true },
+  activeQueuePosition: { type: Number, required: true },
   bookingDate: { type: Date, required: true },
   bookingDateTime: { type: Date, required: true },
   status: { 
@@ -72,7 +74,7 @@ const QueueEntrySchema: Schema = new Schema({
   updatedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 
-QueueEntrySchema.index({ bookingDate: 1, dailyQueueNumber: 1 }, { unique: true });
+QueueEntrySchema.index({ bookingDate: 1, dailySerialNumber: 1 }, { unique: true });
 
 export const MongoQueueEntry = mongoose.model<IQueueEntry>("QueueEntry", QueueEntrySchema);
 

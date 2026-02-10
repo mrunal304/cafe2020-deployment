@@ -303,7 +303,7 @@ export async function registerRoutes(
 
       entries.forEach(entry => {
         worksheet.addRow({
-          bookingNum: `#${entry.dailyQueueNumber}`,
+          bookingNum: `#${entry.dailySerialNumber}`,
           name: entry.name,
           phone: entry.phoneNumber,
           partySize: entry.numberOfPeople,

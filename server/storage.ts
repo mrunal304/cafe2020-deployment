@@ -53,7 +53,8 @@ export class MongoStorage implements IStorage {
       name: entry.name,
       phoneNumber: entry.phoneNumber,
       numberOfPeople: entry.numberOfPeople,
-      dailyQueueNumber: entry.dailyQueueNumber,
+      dailySerialNumber: entry.dailySerialNumber,
+      activeQueuePosition: entry.activeQueuePosition,
       bookingDate: entry.bookingDate,
       bookingDateTime: entry.bookingDateTime,
       status: entry.status,
@@ -108,17 +109,24 @@ export class MongoStorage implements IStorage {
     const bookingDate = new Date(now);
     bookingDate.setHours(0, 0, 0, 0);
 
-    const count = await MongoQueueEntry.countDocuments({ bookingDate });
-    const dailyQueueNumber = count + 1;
+    const totalTodayBookings = await MongoQueueEntry.countDocuments({ bookingDate });
+    const dailySerialNumber = totalTodayBookings + 1;
+
+    const activeTodayBookings = await MongoQueueEntry.countDocuments({
+      bookingDate: bookingDate,
+      status: { $in: ["waiting", "called", "confirmed"] }
+    });
+    const activeQueuePosition = activeTodayBookings + 1;
 
     const newEntryDoc = await MongoQueueEntry.create({
       ...entry,
       name: entry.name || undefined,
-      dailyQueueNumber,
+      dailySerialNumber,
+      activeQueuePosition,
       bookingDate,
       bookingDateTime: now,
       status: 'waiting',
-      position: count + 1
+      position: activeQueuePosition
     });
 
     return this.mapQueueEntry(newEntryDoc);
@@ -127,7 +135,7 @@ export class MongoStorage implements IStorage {
   async getQueueEntry(id: string): Promise<QueueEntry | undefined> {
     const entry = mongoose.Types.ObjectId.isValid(id) 
       ? await MongoQueueEntry.findById(id)
-      : await MongoQueueEntry.findOne({ dailyQueueNumber: parseInt(id) || 0 });
+      : await MongoQueueEntry.findOne({ dailySerialNumber: parseInt(id) || 0 });
     
     if (!entry) return undefined;
     
@@ -139,11 +147,13 @@ export class MongoStorage implements IStorage {
         status: { $in: ['waiting', 'called', 'confirmed'] },
         bookingDate: entry.bookingDate,
         $or: [
-          { dailyQueueNumber: { $lt: entry.dailyQueueNumber } }
+          { dailySerialNumber: { $lt: entry.dailySerialNumber } }
         ]
       });
+      mapped.activeQueuePosition = position + 1;
       mapped.position = position + 1;
     } else {
+      mapped.activeQueuePosition = 0;
       mapped.position = 0; // Not in queue anymore
     }
     
@@ -167,13 +177,15 @@ export class MongoStorage implements IStorage {
     const entries = await MongoQueueEntry.find({ 
       ...filter,
       status: { $in: activeStatuses } 
-    }).sort({ dailyQueueNumber: 1 }).exec();
+    }).sort({ dailySerialNumber: 1 }).exec();
     
     const mapped = entries.map((e: any, index: number) => {
       const entry = this.mapQueueEntry(e);
       if (['waiting', 'called', 'confirmed'].includes(entry.status)) {
+        entry.activeQueuePosition = index + 1;
         entry.position = index + 1;
       } else {
+        entry.activeQueuePosition = 0;
         entry.position = 0;
       }
       return entry;

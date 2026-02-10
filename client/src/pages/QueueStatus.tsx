@@ -114,10 +114,10 @@ export default function QueueStatus() {
           <div className="text-center mb-6">
             <span className="text-[var(--text-dark)] font-bold text-xs block mb-1">Your queue number is</span>
             <h1 className="text-7xl font-black text-[var(--text-dark)] tracking-tighter leading-none">
-              # {queue.dailyQueueNumber}
+              # {queue.activeQueuePosition}
             </h1>
             <div className="mt-2 text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-wider">
-              YOU ARE #{queue.dailyQueueNumber} IN LINE
+              YOU ARE #{queue.activeQueuePosition} IN LINE
             </div>
           </div>
 

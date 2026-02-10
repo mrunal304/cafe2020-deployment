@@ -37,7 +37,7 @@ export default function Home() {
       onSuccess: (entry) => {
         toast({
           title: "Welcome to the queue!",
-          description: `You are #${entry.dailyQueueNumber} in line.`,
+          description: `You are #${entry.activeQueuePosition} in line.`,
         });
         setLocation(`/queue/${entry.id}`);
       },

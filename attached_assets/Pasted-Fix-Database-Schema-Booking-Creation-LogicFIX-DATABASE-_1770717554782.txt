@@ -1,0 +1,85 @@
+Fix Database Schema & Booking Creation LogicFIX DATABASE SCHEMA AND BOOKING CREATION LOGIC
+
+CURRENT PROBLEM:
+- Database has wrong fields (queueNumber, originalQueueNumber)
+- Queue numbers don't reset daily (showing 32, 168, etc.)
+- Need two separate numbering systems
+
+REQUIRED DATABASE SCHEMA:
+
+Remove these fields if they exist:
+- queueNumber
+- originalQueueNumber
+
+Update Booking Model to:
+{
+  _id: ObjectId,
+  name: String,
+  phoneNumber: String,
+  numberOfPeople: Number,
+  
+  dailySerialNumber: Number,      // Admin tracking: 1, 2, 3... (all bookings today)
+  activeQueuePosition: Number,    // Customer display: real-time waiting position
+  
+  bookingDate: Date,              // Date only (time = 00:00:00) for filtering
+  bookingDateTime: Date,          // Full timestamp with exact booking time
+  status: String,                 // "waiting", "called", "confirmed", "completed", "cancelled"
+  
+  message: String,
+  notificationSent: Boolean,
+  notificationStatus: String,
+  calledAt: Date,
+  respondedAt: Date,
+  responseDeadline: Date,
+  responseType: String,
+  createdAt: Date,
+  updatedAt: Date
+}
+
+
+BOOKING CREATION LOGIC:
+
+When a new booking is created:
+
+Step 1: Get today's date (strip time, set to 00:00:00)
+```javascriptconst bookingDate = new Date();
+bookingDate.setHours(0, 0, 0, 0);
+
+Step 2: Calculate dailySerialNumber (count ALL bookings today)
+```javascriptconst totalTodayBookings = await Booking.countDocuments({
+bookingDate: bookingDate
+});
+const dailySerialNumber = totalTodayBookings + 1;
+
+Step 3: Calculate activeQueuePosition (count only ACTIVE bookings)
+```javascriptconst activeTodayBookings = await Booking.countDocuments({
+bookingDate: bookingDate,
+status: { $in: ["waiting", "called", "confirmed"] }
+});
+const activeQueuePosition = activeTodayBookings + 1;
+
+Step 4: Create booking with both numbers
+```javascriptconst newBooking = await Booking.create({
+name: customerName,
+phoneNumber: phoneNumber,
+numberOfPeople: partySize,
+dailySerialNumber: dailySerialNumber,        // e.g., 15 (15th booking today)
+activeQueuePosition: activeQueuePosition,    // e.g., 5 (5th person waiting)
+bookingDate: bookingDate,
+bookingDateTime: new Date(),
+status: "waiting",
+message: customerMessage || "",
+notificationSent: false,
+createdAt: new Date(),
+updatedAt: new Date()
+});
+
+VERIFICATION:
+After implementing, test by creating 3 bookings on the same day:
+- Booking 1: dailySerialNumber = 1, activeQueuePosition = 1
+- Booking 2: dailySerialNumber = 2, activeQueuePosition = 2
+- Booking 3: dailySerialNumber = 3, activeQueuePosition = 3
+
+Check database to confirm both fields are saved correctly.
+
+Please implement this database schema update and booking creation logic first.
