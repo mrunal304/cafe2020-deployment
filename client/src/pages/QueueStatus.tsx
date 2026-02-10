@@ -116,10 +116,10 @@ export default function QueueStatus() {
             <h1 className="text-7xl font-black text-[var(--text-dark)] tracking-tighter leading-none">
               # {queue.position ?? queue.activeQueuePosition}
             </h1>
-            <div className="mt-2 text-[var(--text-muted)] text-2xl font-bold uppercase tracking-wider">
+            <div className="mt-2 text-[var(--text-muted)] text-lg font-semibold uppercase tracking-wider">
               YOU ARE #{queue.position ?? queue.activeQueuePosition} IN LINE
             </div>
-            <p className="mt-2 text-[var(--text-muted)] text-xl font-bold uppercase">
+            <p className="mt-1 text-[var(--text-muted)] text-base font-semibold uppercase">
               Booking Reference: #{queue.dailySerialNumber}
             </p>
           </div>
