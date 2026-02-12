@@ -1,4 +1,4 @@
-import { MongoQueueEntry, MongoCustomerCard } from "../shared/mongo-schema";
+import { MongoQueueEntry, MongoCustomerCard } from "../../shared/mongo-schema";
 import mongoose from "mongoose";
 
 export async function migrateCustomerCards() {
@@ -8,12 +8,12 @@ export async function migrateCustomerCards() {
   console.log(`Found ${entries.length} total queue entries`);
 
   // Group by phone number
-  const customersMap = new Map();
+  const customersMap = new Map<string, any[]>();
   for (const entry of entries) {
     if (!customersMap.has(entry.phoneNumber)) {
       customersMap.set(entry.phoneNumber, []);
     }
-    customersMap.get(entry.phoneNumber).push(entry);
+    customersMap.get(entry.phoneNumber)?.push(entry);
   }
 
   const uniquePhoneNumbers = Array.from(customersMap.keys());
@@ -24,7 +24,7 @@ export async function migrateCustomerCards() {
   let entriesUpdated = 0;
 
   for (const phoneNumber of uniquePhoneNumbers) {
-    const customerEntries = customersMap.get(phoneNumber);
+    const customerEntries = customersMap.get(phoneNumber) || [];
     
     // Check if card exists
     let customerCard = await MongoCustomerCard.findOne({ phoneNumber });
