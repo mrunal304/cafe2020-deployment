@@ -120,7 +120,7 @@ export function CustomerLayout({ children }: { children: ReactNode }) {
 
         {/* Footer */}
         <p className="text-center text-stone-400 font-bold text-[10px] mt-4 uppercase tracking-widest opacity-60 flex-shrink-0">
-          &copy; {new Date().getFullYear()} Cafe Twenty Twenty. Powered by ReserveGo
+          &copy; 2026 Cafe Twenty Twenty. Powered by Vyuhx Technologies
         </p>
       </div>
     </div>
