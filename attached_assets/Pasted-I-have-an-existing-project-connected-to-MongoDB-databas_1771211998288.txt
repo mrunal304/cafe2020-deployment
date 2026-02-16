@@ -1,0 +1,129 @@
+I have an existing project connected to MongoDB database.
+
+CURRENT SETUP:
+- MongoDB Cluster: queuecafe
+- Database: shubhamcafe
+- Collection: users
+- Current admin user exists with:
+  - username: "admin"
+  - password: "admin123" (currently hashed in database)
+- Login UI already exists (React component)
+
+REQUIREMENT:
+I need to add a "Change Password" feature that allows the admin user to change their own password after logging in. This should be a self-service feature within the admin dashboard.
+
+IMPLEMENTATION NEEDED:
+
+1. BACKEND API ENDPOINTS:
+   - POST /api/change-password
+   - Accepts: { currentPassword, newPassword, confirmPassword }
+   - Validates current password matches database
+   - Hashes new password with bcrypt (10 salt rounds)
+   - Updates password in MongoDB users collection
+   - Returns success/error JSON response
+   - Add proper error handling and validation
+
+2. FRONTEND REACT COMPONENT:
+   - Create "ChangePassword.jsx" component
+   - Form with three fields:
+     * Current Password (password input)
+     * New Password (password input)
+     * Confirm New Password (password input)
+   - Password strength indicator (optional but recommended)
+   - Validation rules:
+     * Current password cannot be empty
+     * New password minimum 8 characters
+     * New password must contain: uppercase, lowercase, number, special character
+     * New password and confirm password must match
+     * New password must be different from current password
+   - Submit button with loading state
+   - Success/error message display
+   - Professional UI matching the existing Cafe Twenty Twenty design (clean, modern, centered card layout similar to login page)
+
+3. SECURITY FEATURES:
+   - Use bcrypt for password hashing
+   - Validate old password before allowing change
+   - Add rate limiting to prevent brute force (max 5 attempts per 15 minutes)
+   - Clear form after successful password change
+   - Automatically logout user after password change (force re-login with new password)
+   - Sanitize all inputs
+
+4. INTEGRATION REQUIREMENTS:
+   - Add a "Change Password" link/button in the admin dashboard navigation
+   - Route: /admin/change-password
+   - Protect the route (only accessible when logged in)
+   - Use existing authentication middleware if available
+   - Maintain consistency with existing UI/UX design patterns
+
+5. DATABASE OPERATIONS:
+   - Connect to MongoDB using existing connection
+   - Find user by username from authenticated session
+   - Update password field in users collection
+   - Add "passwordUpdatedAt" timestamp field
+   - Ensure backward compatibility with existing user schema
+
+6. DEPENDENCIES (if not already installed):
+   - Backend: express, mongoose, bcrypt, express-rate-limit
+   - Frontend: react, axios (or fetch API)
+
+7. USER FLOW:
+   Step 1: Admin logs in with current credentials (existing functionality)
+   Step 2: Admin navigates to "Change Password" page
+   Step 3: Admin enters current password, new password, and confirms new password
+   Step 4: System validates inputs and current password
+   Step 5: System updates password in database
+   Step 6: System shows success message
+   Step 7: System logs out admin (redirect to login page)
+   Step 8: Admin logs in with new password
+
+8. ERROR HANDLING:
+   - Display clear error messages for:
+     * Incorrect current password
+     * Weak new password
+     * Password mismatch
+     * Database errors
+     * Network errors
+   - Don't reveal whether user exists in error messages (security)
+
+9. OPTIONAL ENHANCEMENTS:
+   - Password strength meter with visual feedback (weak/medium/strong)
+   - Show/hide password toggle icons
+   - Prevent password reuse (check against last 3 passwords)
+   - Send email notification after password change
+   - Add CAPTCHA for additional security
+
+DESIGN REQUIREMENTS:
+- Match the existing "Cafe Twenty Twenty Management System" login page design
+- Use same color scheme and styling
+- Center the form in a card layout
+- Include the Cafe Twenty Twenty logo
+- Professional, clean, modern UI
+- Mobile responsive
+
+CODE ORGANIZATION:
+- Backend: Create separate route file (routes/passwordRoutes.js) and controller (controllers/passwordController.js)
+- Frontend: Create component in appropriate folder (components/ChangePassword.jsx or pages/ChangePassword.jsx)
+- Add proper comments and documentation
+- Follow existing project structure and coding standards
+
+TESTING CHECKLIST:
+□ Can login with current credentials
+□ Can access change password page after login
+□ Validation works for all fields
+□ Cannot use current password as new password
+□ Password successfully updates in database
+□ Can login with new password after change
+□ Old password no longer works
+□ Error messages display correctly
+□ UI is responsive on mobile
+□ Rate limiting works
+
+Please provide complete, production-ready code with:
+- Full backend API implementation
+- Complete React component with styling
+- Integration instructions
+- Security best practices implemented
+- Clear comments and documentation
+- Error handling throughout
+
+Make the code beginner-friendly with clear variable names and explanations.
