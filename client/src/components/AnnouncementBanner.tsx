@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export function AnnouncementBanner() {
-  const text = "🌞 HAPPY HOURS: SUMMER OFFER! 🍴 TAKEAWAY 10% OFF! 🍴 HAPPY HOURS MONDAY TO FRIDAY – 10% OFF ON DINING 🍴 TIMING: 12:30 PM TO 5:30 PM";
+  const text = "🌞 SUMMER OFFER! 🍴 TAKEAWAY 10% OFF! 🍴 HAPPY HOURS: MONDAY TO FRIDAY – 10% OFF ON DINING 🍴 TIMING: 12:30 PM TO 5:30 PM";
   const repeatedText = Array(4).fill(text).join(" \u00A0\u00A0\u00A0\u00A0\u00A0 ");
 
   return (
