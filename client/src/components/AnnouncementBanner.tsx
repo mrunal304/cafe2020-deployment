@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
 export function AnnouncementBanner() {
-  const text = "🚴 DELIVERY COMING SOON! 🚴";
-  const repeatedText = Array(10).fill(text).join(" \u00A0\u00A0\u00A0\u00A0\u00A0 ");
+  const text = "🌞 HAPPY HOURS: SUMMER OFFER! 🍴 TAKEAWAY 10% OFF! 🍴 HAPPY HOURS MONDAY TO FRIDAY – 10% OFF ON DINING 🍴 TIMING: 12:30 PM TO 5:30 PM";
+  const repeatedText = Array(4).fill(text).join(" \u00A0\u00A0\u00A0\u00A0\u00A0 ");
 
   return (
     <div className="fixed top-0 left-0 w-full h-[30px] md:h-[40px] bg-[#C46A3A] text-white overflow-hidden z-[100] flex items-center shadow-md">
