@@ -246,12 +246,10 @@ export class MongoStorage implements IStorage {
         $or: [{ dailySerialNumber: { $lt: entry.dailySerialNumber } }],
       });
       mapped.activeQueuePosition = position + 1;
-      // @ts-ignore - position can be number or null/undefined
       mapped.position = position + 1;
     } else {
       mapped.activeQueuePosition = 0;
-      // @ts-ignore - position can be number or null/undefined
-      mapped.position = undefined;
+      mapped.position = 0;
     }
 
     return mapped;
@@ -299,12 +297,10 @@ export class MongoStorage implements IStorage {
       const entry = this.mapQueueEntry(e);
       if (["waiting", "called"].includes(entry.status)) {
         entry.activeQueuePosition = index + 1;
-        // @ts-ignore - position can be number or null/undefined
         entry.position = index + 1;
       } else {
         entry.activeQueuePosition = 0;
-        // @ts-ignore - position can be number or null/undefined
-        entry.position = undefined;
+        entry.position = 0;
       }
       return entry;
     });
@@ -376,7 +372,6 @@ export class MongoStorage implements IStorage {
       );
     }
 
-    // ✅ confirmed/completed चे position null करा
     await MongoQueueEntry.updateMany(
       {
         bookingDate,
@@ -386,8 +381,7 @@ export class MongoStorage implements IStorage {
       },
       {
         activeQueuePosition: 0,
-        // @ts-ignore - setting to undefined for Mongo
-        position: undefined,
+        position: 0,
         updatedAt: new Date(),
       },
     );
