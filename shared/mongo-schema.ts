@@ -1,5 +1,13 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
+// === COUNTER SCHEMA (atomic sequence generator) ===
+const CounterSchema: Schema = new Schema({
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 },
+});
+
+export const MongoCounter = mongoose.model("Counter", CounterSchema);
+
 // === USER SCHEMA ===
 export interface IUser extends Document {
   username: string;
@@ -49,6 +57,7 @@ export interface IQueueEntry extends Document {
   name: string;
   phoneNumber: string;
   numberOfPeople: number;
+  queueNumber?: number;
   dailySerialNumber: number;
   activeQueuePosition: number;
   bookingDate: Date;
@@ -73,6 +82,7 @@ const QueueEntrySchema: Schema = new Schema({
   name: { type: String, default: "Guest" },
   phoneNumber: { type: String, required: true },
   numberOfPeople: { type: Number, required: true },
+  queueNumber: { type: Number },
   dailySerialNumber: { type: Number, required: true },
   activeQueuePosition: { type: Number, required: true },
   bookingDate: { type: Date, required: true },
@@ -106,6 +116,7 @@ const QueueEntrySchema: Schema = new Schema({
 }, { timestamps: true });
 
 QueueEntrySchema.index({ bookingDate: 1, dailySerialNumber: 1 }, { unique: true });
+QueueEntrySchema.index({ queueNumber: 1 }, { unique: true, sparse: true });
 
 export const MongoQueueEntry = mongoose.model<IQueueEntry>("QueueEntry", QueueEntrySchema);
 

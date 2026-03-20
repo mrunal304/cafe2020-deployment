@@ -4,6 +4,7 @@ import {
   MongoQueueEntry,
   MongoNotification,
   MongoCustomerCard,
+  MongoCounter,
   type IUser,
   type IQueueEntry,
   type INotification,
@@ -167,21 +168,49 @@ export class MongoStorage implements IStorage {
       visitNumber = (customerCard.totalVisits || 0) + 1;
     }
 
-    // Step 4: Create queue entry with customerCardId and visitNumber
-    const newEntryDoc = await MongoQueueEntry.create({
-      ...entry,
-      name: entry.name || undefined,
-      dailySerialNumber,
-      activeQueuePosition,
-      bookingDate,
-      bookingDateTime: now,
-      status: "waiting",
-      position: activeQueuePosition,
-      customerCardId: customerCard._id,
-      visitNumber,
-      createdAt: now,
-      updatedAt: now,
-    });
+    // Step 4: Atomically get next queueNumber from counter document
+    const getNextQueueNumber = async (): Promise<number> => {
+      const counter = await MongoCounter.findOneAndUpdate(
+        { _id: "queueNumber" },
+        { $inc: { seq: 1 } },
+        { upsert: true, new: true },
+      );
+      return counter!.seq;
+    };
+
+    // Step 5: Create queue entry with retry on duplicate key error
+    let newEntryDoc;
+    let attempts = 0;
+    const maxAttempts = 5;
+    while (attempts < maxAttempts) {
+      const queueNumber = await getNextQueueNumber();
+      try {
+        newEntryDoc = await MongoQueueEntry.create({
+          ...entry,
+          name: entry.name || undefined,
+          queueNumber,
+          dailySerialNumber,
+          activeQueuePosition,
+          bookingDate,
+          bookingDateTime: now,
+          status: "waiting",
+          position: activeQueuePosition,
+          customerCardId: customerCard._id,
+          visitNumber,
+          createdAt: now,
+          updatedAt: now,
+        });
+        break;
+      } catch (err: any) {
+        if (err.code === 11000 && attempts < maxAttempts - 1) {
+          console.warn(`Duplicate key on attempt ${attempts + 1}, retrying with new queueNumber...`);
+          attempts++;
+        } else {
+          throw err;
+        }
+      }
+    }
+    if (!newEntryDoc) throw new Error("Failed to create queue entry after retries");
 
     // Step 5: Update customer card AFTER queue entry created
     await MongoCustomerCard.updateOne(
